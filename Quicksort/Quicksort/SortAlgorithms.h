@@ -2,6 +2,7 @@
 #define QUICKSORT_SORTALGORITHMS_H_
 
 #include <functional>
+#include <stack>
 #include <tuple>
 
 class SortAlgorithms {
@@ -50,37 +51,45 @@ public:
 
 private:
 	// Max interval length for insertion sort.
-	static const int kShortIntervalLength = 4;
+	static const int kShortIntervalLength = 10;
 
 	// Get pointers to first element and last element (excluded), comparer function.
 	// Implement iterative variation of quick sort algorithm.
 	template<typename T, typename Compare>
 	static void IterativeQuickSort(T first, T last, Compare comp) {
-		T* stack = new T [last - first + 1];
-		int top = -1;
+		std::stack<T> stack;
+		stack.push(first);
+		stack.push(last);
 
-		stack[++top] = first;
-		stack[++top] = last;
-
-		while (top >= 0) {
-			last = stack[top--];
-			first = stack[top--];
-
+		while (!stack.empty()) {
+			last = stack.top();
+			stack.pop();
+			first = stack.top();
+			stack.pop();
+			
 			auto bounds = Partition(first, last, comp);
-			T left_bound = std::get<0>(bounds);
-			T right_bound = std::get<1>(bounds);
+			int left_size = std::distance(first, std::get<0>(bounds));
+			int right_size = std::distance(std::get<1>(bounds), last);
 
-			if (std::distance(first, left_bound) > 1) {
-				stack[++top] = first;
-				stack[++top] = left_bound;
+			if (left_size > 1) {
+				if (left_size <= kShortIntervalLength) {
+					InsertionSort(first, std::get<0>(bounds), comp);
+				}
+				else {
+					stack.push(first);
+					stack.push(std::get<0>(bounds));
+				}
 			}
-			if (std::distance(right_bound, last) > 1) {
-				stack[++top] = right_bound;
-				stack[++top] = last;
+			if (right_size > 1) {
+				if (right_size <= kShortIntervalLength) {
+					InsertionSort(std::get<1>(bounds), last, comp);
+				}
+				else {
+					stack.push(std::get<1>(bounds));
+					stack.push(last);
+				}
 			}
 		}
-
-		delete[] stack;
 	}
 
 	// Get pointers to first element and last element (excluded), comparer function.
