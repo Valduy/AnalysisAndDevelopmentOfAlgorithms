@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\ActionNodes">
+      <UniqueIdentifier>{06028e64-4b11-4d9c-adad-59df7d4ec786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ActionNodes">
+      <UniqueIdentifier>{33136dce-6162-4746-b53f-52e1f13de405}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ActionsChain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IActionNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="AcreCostRandomizerNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StopNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="AcresManagmentNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="FoodManagmentNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="WheatManagmentNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Order.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Statistics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResetOrderNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TradeAcresNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="EatAndStarveNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="RatDamageNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlagueNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="NewcomersNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="NewYearNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BriefingNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AcreCostRandomizerNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="StopNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="BriefingNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="AcresManagmentNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="FoodManagmentNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="WheatManagmentNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="TradeAcresNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="SowAndReapNode.h">
+      <Filter>Header Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="SowAndReapNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="EatAndStarveNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="RatDamageNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ResetOrderNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlagueNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="NewcomersNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="NewYearNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultNode.cpp">
+      <Filter>Source Files\ActionNodes</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
