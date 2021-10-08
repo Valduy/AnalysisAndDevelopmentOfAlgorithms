@@ -30,6 +30,8 @@ public:
 	static constexpr int kMinNewcomers = 0;
 	// Максимальное количество новоприбывших.
 	static constexpr int kMaxNewcomers = 50;
+	// Количество игровых раундов.
+	static constexpr int kRoundsCount = 10;
 };
 
 #endif // HAMMURABI_GAMECONSTANTS_H_

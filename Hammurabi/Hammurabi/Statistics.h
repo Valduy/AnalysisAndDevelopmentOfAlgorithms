@@ -1,6 +1,8 @@
 #ifndef HAMMURABI_STATISTICS_H_
 #define HAMMURABI_STATISTICS_H_
 
+#include <vector>
+
 struct Statistics {
 public:
 	int year;
@@ -14,6 +16,7 @@ public:
 	int bushels_in_stocks;
 	int rat_damage;
 	bool is_plagued;
+	std::vector<int> hunger_deaths_percents;
 
 	Statistics(int acres, int population, int bushels)
 		: year(1)
@@ -27,6 +30,7 @@ public:
 		, bushels_in_stocks(bushels)
 		, rat_damage(0)
 		, is_plagued(false)
+		, hunger_deaths_percents()
 	{}
 };
 

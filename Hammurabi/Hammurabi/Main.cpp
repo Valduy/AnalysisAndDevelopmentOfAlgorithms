@@ -13,6 +13,7 @@
 #include "RatDamageNode.h"
 #include "PlagueNode.h"
 #include "NewYearNode.h"
+#include "ResultNode.h"
 #include "StopNode.h"
 #include "ActionsChain.h"
 
@@ -35,6 +36,7 @@ int main() {
 	RatDamageNode rat_damage_node;
 	PlagueNode plague_node;
 	NewYearNode new_year_node;
+	ResultNode result_node;
 	StopNode stop_node;
 
 	ActionsChain game(model);
@@ -52,6 +54,7 @@ int main() {
 		.Add(rat_damage_node)
 		.Add(plague_node)
 		.Add(new_year_node)
+		.Add(result_node)
 		.Add(stop_node);
 
 	game.Run();
