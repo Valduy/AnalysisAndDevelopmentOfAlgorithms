@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "Model.h"
 #include "ResetOrderNode.h"
 #include "AcreCostRandomizerNode.h"
@@ -21,8 +22,21 @@ int main() {
 	std::setlocale(LC_ALL, "Russian");
 	std::cout << "Добро пожаловать в \"Хаммурапи - правитель Вавилона\"!\n";
 
+	std::ifstream ifs(GameConstants::kSaveFileName, std::ios_base::in);
 	Model model(1000, 100, 2800);
-	
+
+	if (!ifs.fail()) {
+		std::cout << "Хотите продолжить с последнего сохранения?\n";
+		int answer;
+		std::cin >> answer;
+
+		if (answer == 1) {
+			model.Deserialize(ifs);
+		}		
+	}	
+
+	ifs.close();
+
 	ResetOrderNode reset_order_node;
 	AcreCostRandomizerNode acre_cost_randomizer_node;
 	BriefingNode briefing_node;

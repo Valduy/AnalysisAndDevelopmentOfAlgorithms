@@ -32,6 +32,8 @@ public:
 	static constexpr int kMaxNewcomers = 50;
 	// Количество игровых раундов.
 	static constexpr int kRoundsCount = 10;
+	// Имя файла с сохранением.
+	static constexpr const char* kSaveFileName = "Save.txt";
 };
 
 #endif // HAMMURABI_GAMECONSTANTS_H_

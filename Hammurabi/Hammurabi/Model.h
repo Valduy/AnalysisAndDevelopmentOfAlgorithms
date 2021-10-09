@@ -5,26 +5,19 @@
 #include "Statistics.h"
 #include "GameConstants.h"
 
-struct Model {
+struct Model : public ISerializable{
 public:
 	Order order;
 	Statistics info;
 
-	Model(int acres, int population, int bushels)
-		: order()
-		, info(acres, population, bushels)
-	{}
+	Model();
+	Model(int acres, int population, int bushels);
 
-	int AvaliableBushels() {
-		return info.bushels_in_stocks 
-			- order.bushels_to_eat 
-			- order.acres_for_trade * info.acre_cost
-			- order.acres_to_sow * GameConstants::kBushelsToSowAcre;
-	}
+	int AvaliableBushels();
+	int AvaliableAcres();
 
-	int AvaliableAcres() {
-		return info.acres + order.acres_for_trade - order.acres_to_sow;
-	}
+	void Serialize(std::ostream& os) override;
+	void Deserialize(std::istream& is) override;
 };
 
 #endif // HAMMURABI_MODEL_H_

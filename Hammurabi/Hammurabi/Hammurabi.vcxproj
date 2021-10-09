@@ -146,6 +146,7 @@
     <ClInclude Include="FoodManagmentNode.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="IActionNode.h" />
+    <ClInclude Include="ISerializable.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="NewcomersNode.h" />
     <ClInclude Include="NewYearNode.h" />
@@ -169,8 +170,10 @@
     <ClCompile Include="EatAndStarveNode.cpp" />
     <ClCompile Include="FoodManagmentNode.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="NewcomersNode.cpp" />
     <ClCompile Include="NewYearNode.cpp" />
+    <ClCompile Include="Order.cpp" />
     <ClCompile Include="PlagueNode.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="RatDamageNode.cpp" />
@@ -178,6 +181,7 @@
     <ClCompile Include="ResultNode.cpp" />
     <ClCompile Include="SowAndReapNode.cpp" />
     <ClCompile Include="SowAndReapNode.h" />
+    <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="StopNode.cpp" />
     <ClCompile Include="TradeAcresNode.cpp" />
     <ClCompile Include="WheatManagmentNode.cpp" />

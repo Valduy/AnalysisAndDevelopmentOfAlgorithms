@@ -2,8 +2,9 @@
 #define HAMMURABI_STATISTICS_H_
 
 #include <vector>
+#include "ISerializable.h"
 
-struct Statistics {
+struct Statistics : public ISerializable {
 public:
 	int year;
 	int acres;
@@ -18,20 +19,10 @@ public:
 	bool is_plagued;
 	std::vector<int> hunger_deaths_percents;
 
-	Statistics(int acres, int population, int bushels)
-		: year(1)
-		, acres(acres)
-		, acre_cost(0)
-		, population(population)
-		, hunger_deaths(0)
-		, newcomers(0)
-		, bushels_per_acre(0)
-		, harvested_bushels(0)
-		, bushels_in_stocks(bushels)
-		, rat_damage(0)
-		, is_plagued(false)
-		, hunger_deaths_percents()
-	{}
+	Statistics(int acres, int population, int bushels);
+
+	void Serialize(std::ostream& os) override;
+	void Deserialize(std::istream& is) override;
 };
 
 #endif // HAMMURABI_STATISTICS_H_
