@@ -1,30 +1,18 @@
 #include <string>
 #include "FoodManagmentNode.h"
 
+FoodManagmentNode::FoodManagmentNode(Messanger& messanger)
+	: messanger_(messanger)
+{}
+
 bool FoodManagmentNode::Act(Model& model) {
-	std::cout << "Сколько бушелей пшеницы повелеваете съесть?\n";
-	int bushels = 0;
+	std::string error_message;
+	int bushels = messanger_.RequestValue<int>(question_, error_notification_);
 
-	do {
-		std::cin >> bushels;
-
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			std::cout << "О, Повелитель, смилуйтесь над моим скудным разумением, "
-				"я не смогу сосчитать столько бушелей...\n";
-			continue;
-		}
-
-		std::string error_message;
-
-		if (IsValid(model, bushels, error_message)) {
-			break;
-		}
-		else {
-			std::cout << error_message;
-		}
-	} while (true);
+	while (!IsValid(model, bushels, error_message)) {
+		std::cout << error_message;
+		bushels = messanger_.RequestValue<int>(question_, error_notification_);
+	}
 
 	model.order.bushels_to_eat = bushels;
 	return true;

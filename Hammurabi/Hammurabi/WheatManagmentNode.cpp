@@ -1,29 +1,17 @@
 #include "WheatManagmentNode.h"
 
+WheatManagmentNode::WheatManagmentNode(Messanger& messanger)
+	: messanger_(messanger)
+{}
+
 bool WheatManagmentNode::Act(Model& model) {
-	std::cout << "Сколько акров земли прикажете засеять?\n";
-	int acres = 0;
+	std::string error_message;
+	int acres = messanger_.RequestValue<int>(question_, error_notification_);
 
-	do {
-		std::cin >> acres;
-
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			std::cout << "О, Повелитель, смилуйтесь над моим скудным разумением, "
-				"я не смогу сосчитать столько акров...\n";
-			continue;
-		}
-
-		std::string error_message;
-
-		if (IsValid(model, acres, error_message)) {
-			break;
-		}
-		else {
-			std::cout << error_message;
-		}
-	} while (true);
+	while (!IsValid(model, acres, error_message)) {
+		std::cout << error_message;
+		acres = messanger_.RequestValue<int>(question_, error_notification_);
+	}
 
 	model.order.acres_to_sow = acres;
 	return true;
@@ -33,6 +21,7 @@ bool WheatManagmentNode::IsValid(Model& model, int acres, std::string& error_mes
 	// Если: введено отрицательное значение.
 	if (acres < 0) {
 		error_message = "Но Повелитель, как это понимать?..\n";
+		return false;
 	}
 	// Если: не хватает акров.
 	if (model.AvaliableAcres() < acres) {

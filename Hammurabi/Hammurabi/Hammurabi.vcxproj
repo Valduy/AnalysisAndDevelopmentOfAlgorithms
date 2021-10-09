@@ -146,6 +146,7 @@
     <ClInclude Include="FoodManagmentNode.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="IActionNode.h" />
+    <ClInclude Include="Messanger.h" />
     <ClInclude Include="ISerializable.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="NewcomersNode.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="EatAndStarveNode.cpp" />
     <ClCompile Include="FoodManagmentNode.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Messanger.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="NewcomersNode.cpp" />
     <ClCompile Include="NewYearNode.cpp" />

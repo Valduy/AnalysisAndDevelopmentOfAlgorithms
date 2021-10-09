@@ -1,29 +1,17 @@
 #include "AcresManagmentNode.h"
 
+AcresManagmentNode::AcresManagmentNode(Messanger& messanger)
+	: messanger_(messanger)
+{}
+
 bool AcresManagmentNode::Act(Model& model) {
-	std::cout << "Как пожелаете распорядиться нашими землями, Повелитель?\n";
-	int acres = 0;
+	std::string error_message;
+	int acres = messanger_.RequestValue<int>(question_, error_notification_);
 
-	do {
-		std::cin >> acres;
-
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			std::cout << "О, Повелитель, смилуйтесь над моим скудным разумением, "
-				"я не смогу сосчитать столько акров...\n";
-			continue;
-		}
-
-		std::string error_message;
-
-		if (IsValid(model, acres, error_message)) {
-			break;
-		}
-		else {
-			std::cout << error_message;
-		}
-	} while (true);
+	while (!IsValid(model, acres, error_message)) {
+		std::cout << error_message;
+		acres = messanger_.RequestValue<int>(question_, error_notification_);
+	}
 
 	model.order.acres_for_trade = acres;
 	return true;

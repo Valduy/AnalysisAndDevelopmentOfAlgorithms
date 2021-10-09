@@ -8,7 +8,6 @@ bool PlagueNode::Act(Model& model) {
 	model.info.is_plagued = random_.Next() <= GameConstants::kPlagueChance;
 
 	if (model.info.is_plagued) {
-		model.info.is_plagued = true;
 		model.info.population /= 2;
 	}
 

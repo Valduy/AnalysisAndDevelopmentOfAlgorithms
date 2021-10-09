@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include "Messanger.h"
 #include "Model.h"
 #include "ResetOrderNode.h"
 #include "AcreCostRandomizerNode.h"
@@ -18,43 +20,37 @@
 #include "StopNode.h"
 #include "ActionsChain.h"
 
+void TryToLoadSave(Model& model, Messanger& messanger) {
+	std::ifstream ifs(GameConstants::kSaveFileName, std::ios_base::in);
+
+	if (!ifs.fail()) {
+		std::string question = "Хотите продолжить с последнего сохранения ?\n";
+		std::string error_notification = "О, Повелитель, смилуйтесь над моим скудным разумением, "
+			"я не знаю, что мне нужно сделать...\n";
+
+		if (messanger.RequestYesOrNo(question, error_notification)) {
+			model.Deserialize(ifs);
+		}
+	}
+
+	ifs.close();
+}
+
 int main() {
 	std::setlocale(LC_ALL, "Russian");
 	std::cout << "Добро пожаловать в \"Хаммурапи - правитель Вавилона\"!\n";
-
-	std::ifstream ifs(GameConstants::kSaveFileName, std::ios_base::in);
+		
+	Messanger messanger;
 	Model model(1000, 100, 2800);
-
-	if (!ifs.fail()) {		
-		std::string answer;
-
-		do {
-			std::cout << "Хотите продолжить с последнего сохранения? (Да: "
-				<< GameConstants::kYesAnswer << "/Нет: " << GameConstants::kNoAnswer << ")\n";
-			std::cin >> answer;
-
-			if (answer.compare(GameConstants::kYesAnswer) == 0 || answer.compare(GameConstants::kNoAnswer) == 0) {
-				break;
-			}
-
-			std::cout << "О, Повелитель, смилуйтесь над моим скудным разумением, "
-				"я не знаю, что мне нужно сделать...\n";
-		} while (true);
-
-		if (answer.compare(GameConstants::kYesAnswer) == 0) {
-			model.Deserialize(ifs);
-		}
-	}	
-
-	ifs.close();
+	TryToLoadSave(model, messanger);
 
 	ActionsChain game(model);
 	game.Add<ResetOrderNode>()
 		.Add<AcreCostRandomizerNode>()
 		.Add<BriefingNode>()
-		.Add<AcresManagmentNode>()
-		.Add<FoodManagmentNode>()
-		.Add<WheatManagmentNode>()
+		.Add<AcresManagmentNode>([&messanger]() { return new AcresManagmentNode(messanger); })
+		.Add<FoodManagmentNode>([&messanger]() { return new FoodManagmentNode(messanger); })
+		.Add<WheatManagmentNode>([&messanger]() { return new WheatManagmentNode(messanger); })
 		.Add<TradeAcresNode>()
 		.Add<EatAndStarveNode>()
 		.Add<SowAndReapNode>()
@@ -63,7 +59,7 @@ int main() {
 		.Add<PlagueNode>()
 		.Add<NewYearNode>()
 		.Add<ResultNode>()
-		.Add<StopNode>();
+		.Add<StopNode>([&messanger]() { return new StopNode(messanger); });
 
 	game.Run();
 	return 0;
