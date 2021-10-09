@@ -7,7 +7,7 @@ bool ResultNode::Act(Model& model) {
 
 	int hunger_percent_avg = std::accumulate(
 		model.info.hunger_deaths_percents.begin(),
-		model.info.hunger_deaths_percents.end(), 0.0) / model.info.year;
+		model.info.hunger_deaths_percents.end(), 0) / model.info.year;
 
 	int acres_per_man = model.info.acres / model.info.population;
 

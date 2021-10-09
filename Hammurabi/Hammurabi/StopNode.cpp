@@ -5,13 +5,19 @@ bool StopNode::Act(Model& model) {
 	std::string answer;
 
 	do {
-		std::cout << "Не желаете ли прерваться? (" << kYesAnswer << "/" << kNoAnswer << ")\n";
+		std::cout << "Не желаете ли прерваться ? (Да: " 
+			<< GameConstants::kYesAnswer << "/Нет: " << GameConstants::kNoAnswer << ")\n";
 		std::cin >> answer;
-	} while (answer.compare(kYesAnswer) != 0 && answer.compare(kNoAnswer) != 0);
 
-	std::cout << "\n";
+		if (answer.compare(GameConstants::kYesAnswer) == 0 || answer.compare(GameConstants::kNoAnswer) == 0) {
+			break;
+		}
 
-	if (answer.compare(kYesAnswer) == 0) {
+		std::cout << "О, Повелитель, смилуйтесь над моим скудным разумением, "
+			"я не знаю, что мне нужно сделать...\n";
+	} while (true);
+
+	if (answer.compare(GameConstants::kYesAnswer) == 0) {
 		std::ofstream ofs(GameConstants::kSaveFileName, std::ios_base::out | std::ios_base::trunc);
 		model.Serialize(ofs);
 		ofs.flush();

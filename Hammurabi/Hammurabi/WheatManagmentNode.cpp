@@ -34,7 +34,7 @@ bool WheatManagmentNode::IsValid(Model& model, int acres, std::string& error_mes
 		error_message = "Но Повелитель, нам не хватит людей чтобы засеять столько акров...\n";
 		return false;
 	}
-	if (model.AvaliableBushels() < acres * GameConstants::kBushelsToSowAcre) {
+	if (model.AvaliableBushels() < acres / GameConstants::kAcresSowedByBushel) {
 		error_message = "Но Повелитель, у нас недостаточно зерна, чтобы засеять столько акров..\n";
 		return false;
 	}

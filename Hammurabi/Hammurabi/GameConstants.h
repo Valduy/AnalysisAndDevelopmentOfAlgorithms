@@ -12,8 +12,8 @@ public:
 	static constexpr int kMinBushelsPerAcre = 1; 
 	// Максимальное количество бушелей с акра.
 	static constexpr int kMaxBushelsPerAcre = 6; 
-	// Сколько нужно бушелей, чтобы засеять один акр.
-	static constexpr float kBushelsToSowAcre = 0.5f;
+	// Сколько акров можно засеять одним бушелем.
+	static constexpr int kAcresSowedByBushel = 2;
 	// Сколько акров может обработать один человек.
 	static constexpr int kAcresPerMan = 10;
 	// Сколько бушелей потребляет 1 человек за год.
@@ -34,6 +34,10 @@ public:
 	static constexpr int kRoundsCount = 10;
 	// Имя файла с сохранением.
 	static constexpr const char* kSaveFileName = "Save.txt";
+	// Ответ да.
+	static constexpr const char* kYesAnswer = "1";
+	// Ответ нет.
+	static constexpr const char* kNoAnswer = "0";
 };
 
 #endif // HAMMURABI_GAMECONSTANTS_H_

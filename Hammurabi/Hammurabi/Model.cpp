@@ -11,7 +11,7 @@ int Model::AvaliableBushels() {
 	return info.bushels_in_stocks
 		- order.bushels_to_eat
 		- order.acres_for_trade * info.acre_cost
-		- order.acres_to_sow * GameConstants::kBushelsToSowAcre;
+		- order.acres_to_sow / GameConstants::kAcresSowedByBushel;
 }
 
 int Model::AvaliableAcres() {

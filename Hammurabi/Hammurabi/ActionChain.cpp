@@ -5,9 +5,12 @@ ActionsChain::ActionsChain(Model& model)
 	, current_(0)
 {}
 
-ActionsChain& ActionsChain::Add(IActionNode& node) {
-	nodes_.push_back(&node);
-	return *this;
+ActionsChain::~ActionsChain() {
+	for (auto it : nodes_) {
+		delete it;
+	}
+
+	nodes_.clear();
 }
 
 void ActionsChain::Run() {

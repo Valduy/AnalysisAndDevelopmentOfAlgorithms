@@ -8,8 +8,14 @@
 class ActionsChain {
 public:
 	ActionsChain(Model& model);
+	~ActionsChain();
 
-	ActionsChain& Add(IActionNode& node);
+	template<typename TActionNode>
+	ActionsChain& Add() {
+		nodes_.push_back(new TActionNode());
+		return *this;
+	}
+
 	void Run();
 
 private:
