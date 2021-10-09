@@ -1,7 +1,7 @@
 #include "BriefingNode.h"
 
 bool BriefingNode::Act(Model& model) {
-	std::cout << "Мой повелитель, соизволь поведать тебе\n"
+	std::cout << "Мой Повелитель, соизволь поведать тебе\n"
 		"\tв году " << model.info.year << " твоего правления:\n";
 
 	if (model.info.hunger_deaths > 0) {

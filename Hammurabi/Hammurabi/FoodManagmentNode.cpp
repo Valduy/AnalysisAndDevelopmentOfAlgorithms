@@ -1,3 +1,4 @@
+#include <string>
 #include "FoodManagmentNode.h"
 
 bool FoodManagmentNode::Act(Model& model) {
@@ -30,10 +31,13 @@ bool FoodManagmentNode::Act(Model& model) {
 }
 
 bool FoodManagmentNode::IsValid(Model& model, int bushels, std::string& error_message) {
+	// Если: не хватает бушелей.
 	if (bushels > model.AvaliableBushels()) {
-		error_message = "Но Повелитель, у нас нет столько пшеницы...\n";
+		error_message = "Но Повелитель, у нас нет столько пшеницы.\n"
+			"В наших амбарах лишь только " + std::to_string(model.AvaliableBushels()) + " бушелей...\n";
 		return false;
 	}
+	// Если: введено отрицательное значение.
 	if (bushels < 0) {
 		error_message = "Но Повелитель, вы же не хотите заморить нас голодом, правда?..\n";
 		return false;

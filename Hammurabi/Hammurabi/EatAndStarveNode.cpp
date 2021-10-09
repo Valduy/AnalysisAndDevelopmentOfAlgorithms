@@ -13,7 +13,7 @@ bool EatAndStarveNode::Act(Model& model) {
 
 
 		if (model.info.hunger_deaths >= prev_population * GameConstants::kMaxHungerDeathsPercent / 100) {
-			std::cout << "¬ы заморили голодом " << model.info.hunger_deaths << "!!!\n"
+			std::cout << "¬ы заморили голодом " << model.info.hunger_deaths << " человек!!!\n"
 				"»з-за вашей некомпетентности в управлении, народ устроил бунт, и изгнал вас их города.\n"
 				"“еперь вы вынуждены влачить жалкое существование в изгнании.\n";
 			return false;

@@ -1,7 +1,7 @@
 #include "AcresManagmentNode.h"
 
 bool AcresManagmentNode::Act(Model& model) {
-	std::cout << "Как пожелаете распорядиться нашими землями, повелитель?\n";
+	std::cout << "Как пожелаете распорядиться нашими землями, Повелитель?\n";
 	int acres = 0;
 
 	do {
@@ -29,13 +29,24 @@ bool AcresManagmentNode::Act(Model& model) {
 	return true;
 }
 
-bool AcresManagmentNode::IsValid(Model& model, int acres, std::string& error) {
-	if (acres * model.info.acre_cost > model.AvaliableBushels()) {
-		error = "Но повелитель, мы не можем себе этого позволить...\n";
+bool AcresManagmentNode::IsValid(Model& model, int acres, std::string& error_message) {
+	int trade_cost = acres * model.info.acre_cost;
+
+	// Если: int ovrflow.
+	if (acres != 0 && trade_cost / acres != model.info.acre_cost) {
+		error_message = "Но Повелитель, столько акров попросту не существует...\n";
 		return false;
 	}
+	// Если: не хватает бушелей.
+	if (trade_cost > model.AvaliableBushels()) {
+		error_message = "Но Повелитель, мы не можем себе этого позволить.\n"
+			"В наших амбарах лишь только " + std::to_string(model.AvaliableAcres()) + " бушелей...\n";
+		return false;
+	}
+	// Если: не хватает акров.
 	if ((acres < 0) && (model.AvaliableAcres() + acres < 0)) {
-		error = "Но повелитель, у нас нет столько земель...\n";
+		error_message = "Но Повелитель, у нас нет столько земель.\n"
+			"Наши владения занимают лишь только " + std::to_string(model.AvaliableAcres()) + " акров...\n";
 		return false;
 	}
 
