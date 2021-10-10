@@ -34,10 +34,6 @@ public:
 	static constexpr int kRoundsCount = 10;
 	// Имя файла с сохранением.
 	static constexpr const char* kSaveFileName = "Save.txt";
-	// Ответ да.
-	static constexpr const char* kYesAnswer = "1";
-	// Ответ нет.
-	static constexpr const char* kNoAnswer = "0";
 };
 
 #endif // HAMMURABI_GAMECONSTANTS_H_

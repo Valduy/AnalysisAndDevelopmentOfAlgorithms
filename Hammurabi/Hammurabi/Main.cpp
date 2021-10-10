@@ -24,7 +24,7 @@ void TryToLoadSave(Model& model, Messanger& messanger) {
 	std::ifstream ifs(GameConstants::kSaveFileName, std::ios_base::in);
 
 	if (!ifs.fail()) {
-		std::string question = "Хотите продолжить с последнего сохранения ?\n";
+		std::string question = "Хотите продолжить с последнего сохранения?\n";
 		std::string error_notification = "О, Повелитель, смилуйтесь над моим скудным разумением, "
 			"я не знаю, что мне нужно сделать...\n";
 

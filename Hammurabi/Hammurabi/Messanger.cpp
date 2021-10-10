@@ -7,12 +7,13 @@ bool Messanger::RequestYesOrNo(const std::string& question, const std::string& e
 
 	do {
 		std::cout << question;
+		std::cout << "(Да: " << kYesAnswer << "/Нет: " << kNoAnswer << ")\n";
 		std::cin >> answer;
 
-		if (answer.compare(GameConstants::kYesAnswer) == 0) {
+		if (answer.compare(kYesAnswer) == 0) {
 			return true;
 		}
-		if (answer.compare(GameConstants::kNoAnswer) == 0) {
+		if (answer.compare(kNoAnswer) == 0) {
 			return false;
 		}
 

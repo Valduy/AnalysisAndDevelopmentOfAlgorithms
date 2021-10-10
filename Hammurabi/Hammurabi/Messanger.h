@@ -25,6 +25,10 @@ public:
 			}
 		} while (true);
 	}
+
+private:
+	const char* kYesAnswer = "1";
+	const char* kNoAnswer = "0";
 };
 
 #endif // HAMMURABI_MESSANGER_H_
