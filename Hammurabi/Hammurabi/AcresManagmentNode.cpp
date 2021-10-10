@@ -1,3 +1,4 @@
+#include <sstream>
 #include "AcresManagmentNode.h"
 
 AcresManagmentNode::AcresManagmentNode(Messanger& messanger)
@@ -18,6 +19,7 @@ bool AcresManagmentNode::Act(Model& model) {
 }
 
 bool AcresManagmentNode::IsValid(Model& model, int acres, std::string& error_message) {
+	std::stringstream sstream;
 	int trade_cost = acres * model.info.acre_cost;
 
 	// Если: int ovrflow.
@@ -27,14 +29,16 @@ bool AcresManagmentNode::IsValid(Model& model, int acres, std::string& error_mes
 	}
 	// Если: не хватает бушелей.
 	if (trade_cost > model.AvaliableBushels()) {
-		error_message = "Но Повелитель, мы не можем себе этого позволить.\n"
-			"В наших амбарах лишь только " + std::to_string(model.AvaliableAcres()) + " бушелей...\n";
+		sstream << "Но Повелитель, мы не можем себе этого позволить.\nВ наших амбарах лишь только "
+			<< model.AvaliableAcres() << " бушелей...\n";
+		error_message = sstream.str();
 		return false;
 	}
 	// Если: не хватает акров.
 	if ((acres < 0) && (model.AvaliableAcres() + acres < 0)) {
-		error_message = "Но Повелитель, у нас нет столько земель.\n"
-			"Наши владения занимают лишь только " + std::to_string(model.AvaliableAcres()) + " акров...\n";
+		sstream << "Но Повелитель, у нас нет столько земель.\nНаши владения занимают лишь только "
+			<< model.AvaliableAcres() << " акров...\n";
+		error_message = sstream.str();
 		return false;
 	}
 

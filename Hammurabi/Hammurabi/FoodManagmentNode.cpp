@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 #include "FoodManagmentNode.h"
 
 FoodManagmentNode::FoodManagmentNode(Messanger& messanger)
@@ -19,10 +20,13 @@ bool FoodManagmentNode::Act(Model& model) {
 }
 
 bool FoodManagmentNode::IsValid(Model& model, int bushels, std::string& error_message) {
+	std::stringstream sstream;
+	
 	// Если: не хватает бушелей.
 	if (bushels > model.AvaliableBushels()) {
-		error_message = "Но Повелитель, у нас нет столько пшеницы.\n"
-			"В наших амбарах лишь только " + std::to_string(model.AvaliableBushels()) + " бушелей...\n";
+		sstream << "Но Повелитель, у нас нет столько пшеницы.\nВ наших амбарах лишь только "
+			<< model.AvaliableBushels() << " бушелей...\n";
+		error_message = sstream.str();
 		return false;
 	}
 	// Если: введено отрицательное значение.

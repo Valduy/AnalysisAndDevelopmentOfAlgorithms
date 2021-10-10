@@ -1,3 +1,4 @@
+#include <sstream>
 #include "WheatManagmentNode.h"
 
 WheatManagmentNode::WheatManagmentNode(Messanger& messanger)
@@ -18,6 +19,8 @@ bool WheatManagmentNode::Act(Model& model) {
 }
 
 bool WheatManagmentNode::IsValid(Model& model, int acres, std::string& error_message) {
+	std::stringstream sstream;
+
 	// Если: введено отрицательное значение.
 	if (acres < 0) {
 		error_message = "Но Повелитель, как это понимать?..\n";
@@ -25,20 +28,23 @@ bool WheatManagmentNode::IsValid(Model& model, int acres, std::string& error_mes
 	}
 	// Если: не хватает акров.
 	if (model.AvaliableAcres() < acres) {
-		error_message = "Но Повелитель, у нас нет столько земель.\n"
-			"Наши владения занимают лишь только " + std::to_string(model.AvaliableAcres()) + " акров...\n";
+		sstream << "Но Повелитель, у нас нет столько земель.\nНаши владения занимают лишь только "
+			<< model.AvaliableAcres() << " акров...\n";
+		error_message = sstream.str();
 		return false;
 	}
 	// Если: не хватает людей.
 	if (model.info.population * GameConstants::kAcresPerMan < acres) {
-		error_message = "Но Повелитель, нам не хватит людей чтобы засеять столько акров.\n"
-			"Ныне в городе живет только " + std::to_string(model.info.population) + " человек...\n";
+		sstream << "Но Повелитель, нам не хватит людей чтобы засеять столько акров.\nНыне в городе живет только "
+			<< model.info.population << " человек...\n";
+		error_message = sstream.str();
 		return false;
 	}
 	// Если: не хватает бушелей.
 	if (model.AvaliableBushels() < acres / GameConstants::kAcresSowedByBushel) {
-		error_message = "Но Повелитель, у нас недостаточно зерна, чтобы засеять столько акров.\n"
-			"В наших амбарах лишь только " + std::to_string(model.AvaliableBushels()) + " бушелей...\n";
+		sstream << "Но Повелитель, у нас недостаточно зерна, чтобы засеять столько акров.\nВ наших амбарах лишь только "
+			<< model.AvaliableBushels() << " бушелей...\n";
+		error_message = sstream.str();
 		return false;
 	}
 
