@@ -8,7 +8,7 @@
 #include <malloc.h>
 
 template<typename T>
-class Array {
+class Array final {
 public:
 	template<typename T>
 	class ConstIter {
@@ -47,6 +47,30 @@ public:
 			return Get();
 		}
 
+		friend bool operator < (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
+			return lhs.temp_ < rhs.temp_;
+		}
+
+		friend bool operator > (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
+			return rhs < lhs;
+		}
+
+		friend bool operator <= (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
+			return !(lhs > rhs);
+		}
+
+		friend bool operator >= (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
+			return !(lhs < rhs);
+		}
+
+		friend bool operator == (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
+			return lhs.temp_ == rhs.temp_;
+		}
+
+		friend bool operator != (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
+			return !(lhs == rhs);
+		}
+
 	protected:
 		T* temp_;
 		T* last_;
@@ -72,7 +96,7 @@ public:
 
 		Iter<T> operator++(int) {
 			Iter<T> temp = *this;
-			++* this;
+			++*this;
 			return temp;
 		}
 
@@ -111,7 +135,7 @@ public:
 	}
 
 	~Array() {
-		FreeArray();
+		FreeArray(array_, size_);
 	}
 
 	int Insert(const T& value) {
@@ -126,7 +150,7 @@ public:
 		}
 
 		ShiftRight(index, size_ - index);
-
+		new(array_ + index) T(value);
 		array_[index] = std::move(value);
 		++size_;
 		return index;
@@ -134,7 +158,7 @@ public:
 
 	void Remove(int index) {
 		assert(index >= 0 && index < size_ && "Index out of range.");
-
+		array_[index].~T();
 		int next_index = index + 1;
 		ShiftLeft(next_index, size_ - next_index);
 		--size_;
@@ -160,20 +184,26 @@ public:
 		return Iterator(array_ + size_ - 1, array_, GetNextLeft, HasNextLeft);
 	}
 
-	T* begin() {
-		return array_;
+	Iterator begin() {
+		return GetIterator();
 	}
 
-	T* end() {
-		return array_ + size_;
+	Iterator end() {
+		return Iterator(array_ + size_, array_ + size_ - 1, GetNextRight, HasNextRight);
 	}
 
-	const T* cbegin() {
-		return array_;
+	ConstIter cbegin() const {
+		return GetIterator();
 	}
 
-	const T* cend() {
-		return array_ + size_;
+	ConstIter cend() const {
+		return ConstIterator(array_ + size_, array_ + size_ - 1, GetNextRight, HasNextRight);
+	}
+
+	friend void swap(Array<T>& first, Array<T>& second) {
+		std::swap(first.capacity_, second.capacity_);
+		std::swap(first.size_, second.size_);
+		std::swap(first.array_, second.array_);
 	}
 
 	Array<T>& operator=(Array<T> other) {
@@ -207,19 +237,16 @@ private:
 		return temp >= end;
 	}
 
-	// TODO: почему-то юзают friend, public и вот это вот все...
-	void Swap(Array<T>& first, Array<T>& second) {
-		std::swap(first.capacity_, second.capacity_);
-		std::swap(first.size_, second.size_);
-		std::swap(first.array_, second.array_);
-	}
-
-	T* AllocArray(int size) {
+	static T* AllocArray(int size) {
 		return (T*)malloc(sizeof(T*) * size);
 	}
 
-	void FreeArray() {
-		free(array_);
+	static void FreeArray(T* arr, int size) {
+		for (int i = 0; i < size; ++i) {
+			arr[i].~T();
+		}
+
+		free(arr);
 	}
 
 	void Resize(int new_size) {
@@ -229,7 +256,7 @@ private:
 			new_array[i] = std::move(array_[i]);
 		}
 
-		FreeArray();
+		FreeArray(array_, size_);
 		size_ = new_size;
 		array_ = new_array;
 	}	

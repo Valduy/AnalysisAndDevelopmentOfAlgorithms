@@ -3,9 +3,9 @@
 
 int main() {
 	Array<int> arr;
-	arr.Insert(0);
-	arr.Insert(0);
-	arr.Insert(0);
+	arr.Insert(1);
+	arr.Insert(2);
+	arr.Insert(3);
 
 	for (auto it : arr) {
 		std::cout << it << " ";

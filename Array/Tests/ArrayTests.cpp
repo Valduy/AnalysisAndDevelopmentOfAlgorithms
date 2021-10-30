@@ -198,6 +198,45 @@ TEST_P(SequencesFixture, GetReverceIterator_EnumerateAndSetValues_AllSetValuesPr
 	EXPECT_TRUE(IsEqual(arr, seq));
 }
 
+TEST_P(SequencesFixture, ConstantIteration_IterateAllItems) {
+	auto seq = GetParam();
+	Array<int> arr;
+	auto is_valid = [&]() {
+		int i = 0;
+
+		for (auto item : arr) {
+			if (item != seq[i]) {
+				return false;
+			}
+
+			++i;
+		}
+
+		return true;
+	};
+
+	FillInDirectOrder(arr, seq);
+
+	EXPECT_TRUE(is_valid());
+}
+
+TEST_P(SequencesFixture, MutableIteration_IterateAndMutateAllItems) {
+	auto seq = GetParam();
+	Array<int> arr;
+
+	FillInDirectOrder(arr, seq);
+
+	for (auto it = arr.begin(); it != arr.end(); ++it) {
+		*it += 1;
+	}
+
+	for (auto it = seq.begin(); it != seq.end(); ++it) {
+		*it += 1;
+	}
+
+	EXPECT_TRUE(IsEqual(arr, seq));
+}
+
 INSTANTIATE_TEST_CASE_P(
 	ArrayTests,
 	SequencesFixture,
