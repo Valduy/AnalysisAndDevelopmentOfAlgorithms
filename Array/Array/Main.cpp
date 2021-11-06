@@ -1,6 +1,15 @@
 #include <iostream>
 #include "Array.h"
 
+class Test {
+public:
+	int id_;
+
+	Test(int id) 
+		: id_(id)
+	{}
+};
+
 int main() {
 	Array<int> arr;
 	arr.Insert(1);

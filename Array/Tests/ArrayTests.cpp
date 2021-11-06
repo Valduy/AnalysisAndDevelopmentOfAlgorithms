@@ -95,7 +95,7 @@ TEST_P(SequencesFixture, Remove_RemoveMiddleElement_PresentedAllElementsExceptMi
 TEST(ArrayTests, GetIterator_EnumerateEmptyArrayInDirectOrder_ArrayNotEnumerated) {
 	Array<int> arr;
 	auto is_valid = [&]() {
-		for (auto arr_it = arr.GetIterator(); arr_it.HasNext(); arr_it.Next()) {
+		for (auto arr_it = arr.GetIterator(); arr_it.HasCurrent(); arr_it.Next()) {
 			return false;
 		}
 
@@ -111,7 +111,7 @@ TEST_P(SequencesFixture, GetIterator_EnumerateArrayInDirectOrder_ElementsEnumera
 	auto is_valid = [&]() {
 		auto seq_it = seq.begin();
 
-		for (Array<int>::ConstIterator arr_it = arr.GetIterator(); arr_it.HasNext(); arr_it.Next()) {
+		for (Array<int>::ConstIterator arr_it = arr.GetIterator(); arr_it.HasCurrent(); arr_it.Next()) {
 			if (arr_it.Get() != *seq_it) {
 				return false;
 			}
@@ -137,7 +137,7 @@ TEST_P(SequencesFixture, GetIterator_EnumerateAndSetValues_AllSetValuesPresented
 
 	auto seq_it = seq.begin();
 
-	for (Array<int>::Iterator arr_it = arr.GetIterator(); arr_it.HasNext(); arr_it.Next()) {
+	for (Array<int>::Iterator arr_it = arr.GetIterator(); arr_it.HasCurrent(); arr_it.Next()) {
 		arr_it.Set(*seq_it);
 		++seq_it;
 	}
@@ -148,7 +148,7 @@ TEST_P(SequencesFixture, GetIterator_EnumerateAndSetValues_AllSetValuesPresented
 TEST(ArrayTests, GetReverceIterator_EnumerateEmptyArrayInReverceOrder_ArrayNotEnumerated) {
 	Array<int> arr;
 	auto is_valid = [&]() {
-		for (auto arr_it = arr.GetReverceIterator(); arr_it.HasNext(); arr_it.Next()) {
+		for (auto arr_it = arr.GetReverceIterator(); arr_it.HasCurrent(); arr_it.Next()) {
 			return false;
 		}
 
@@ -164,7 +164,7 @@ TEST_P(SequencesFixture, GetReverceIterator_EnumerateArrayInReverceOrder_Element
 	auto is_valid = [&]() {
 		auto seq_rit = seq.rbegin();
 
-		for (Array<int>::ConstIterator arr_rit = arr.GetReverceIterator(); arr_rit.HasNext(); arr_rit.Next()) {
+		for (Array<int>::ConstIterator arr_rit = arr.GetReverceIterator(); arr_rit.HasCurrent(); arr_rit.Next()) {
 			if (arr_rit.Get() != *seq_rit) {
 				return false;
 			}
@@ -190,7 +190,7 @@ TEST_P(SequencesFixture, GetReverceIterator_EnumerateAndSetValues_AllSetValuesPr
 
 	auto seq_rit = seq.rbegin();
 
-	for (Array<int>::Iterator arr_rit = arr.GetReverceIterator(); arr_rit.HasNext(); arr_rit.Next()) {
+	for (Array<int>::Iterator arr_rit = arr.GetReverceIterator(); arr_rit.HasCurrent(); arr_rit.Next()) {
 		arr_rit.Set(*seq_rit);
 		++seq_rit;
 	}

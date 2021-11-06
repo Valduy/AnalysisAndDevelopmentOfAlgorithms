@@ -28,7 +28,7 @@ public:
 			temp_ = next_(temp_);
 		}
 
-		bool HasNext() {
+		bool HasCurrent() {
 			return has_next_(temp_, last_);
 		}
 
@@ -131,7 +131,7 @@ public:
 	Array(Array&& other) noexcept
 		: Array() 
 	{
-		Swap(*this, other);
+		swap(*this, other);
 	}
 
 	~Array() {
@@ -149,9 +149,9 @@ public:
 			Resize(2 * size_);
 		}
 
+		new(array_ + size_) T();
 		ShiftRight(index, size_ - index);
 		new(array_ + index) T(value);
-		array_[index] = std::move(value);
 		++size_;
 		return index;
 	}
@@ -207,7 +207,7 @@ public:
 	}
 
 	Array<T>& operator=(Array<T> other) {
-		Swap(*this, other);
+		swap(*this, other);
 		return *this;
 	}
 
@@ -238,7 +238,7 @@ private:
 	}
 
 	static T* AllocArray(int size) {
-		return (T*)malloc(sizeof(T*) * size);
+		return (T*)malloc(sizeof(T) * size);
 	}
 
 	static void FreeArray(T* arr, int size) {
@@ -253,7 +253,7 @@ private:
 		T* new_array = AllocArray(new_size);
 
 		for (int i = 0; i < size_; ++i) {
-			new_array[i] = std::move(array_[i]);
+			new(new_array + i) T(std::move(array_[i]));
 		}
 
 		FreeArray(array_, size_);
