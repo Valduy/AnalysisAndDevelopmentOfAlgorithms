@@ -4,6 +4,7 @@
 #include <cassert>
 #include <utility>
 #include <functional>
+#include <algorithm>
 #include <iostream>
 #include <malloc.h>
 
@@ -146,21 +147,22 @@ public:
 		assert(index >= 0 && index <= size_ && "Index out of range.");
 
 		if (size_ == capacity_) {
-			Resize(2 * size_);
+			Resize(std::max(2 * size_, 1));
 		}
 
+		// как избавиться от лишней аллокации
 		new(array_ + size_) T();
 		ShiftRight(index, size_ - index);
-		new(array_ + index) T(value);
+		array_[index] = value;
 		++size_;
 		return index;
 	}
 
 	void Remove(int index) {
-		assert(index >= 0 && index < size_ && "Index out of range.");
-		array_[index].~T();
+		assert(index >= 0 && index < size_ && "Index out of range.");		
 		int next_index = index + 1;
 		ShiftLeft(next_index, size_ - next_index);
+		array_[size_ - 1].~T();
 		--size_;
 	}
 
