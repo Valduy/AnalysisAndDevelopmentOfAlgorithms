@@ -150,10 +150,8 @@ public:
 			Resize(std::max(2 * size_, 1));
 		}
 
-		// как избавиться от лишней аллокации
-		new(array_ + size_) T();
-		ShiftRight(index, size_ - index);
-		array_[index] = value;
+		new(array_ + size_) T(value);
+		BubbleDown(index, size_ - index);
 		++size_;
 		return index;
 	}
@@ -263,9 +261,9 @@ private:
 		array_ = new_array;
 	}	
 
-	void ShiftRight(int index, int count) {
+	void BubbleDown(int index, int count) {
 		for (int i = index + count - 1; i >= index; --i) {
-			array_[i + 1] = std::move(array_[i]);
+			std::swap(array_[i], array_[i + 1]);
 		}
 	}
 
