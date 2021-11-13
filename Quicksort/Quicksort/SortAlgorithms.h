@@ -1,10 +1,6 @@
 #ifndef QUICKSORT_SORTALGORITHMS_H_
 #define QUICKSORT_SORTALGORITHMS_H_
 
-#include <functional>
-#include <stack>
-#include <tuple>
-
 class SortAlgorithms {
 public:
 	// Get pointers to first element and last element (excluded), comparer function.
@@ -17,102 +13,68 @@ public:
 			T back = forward;
 
 			for (; back > first && comp(*back, *(back - 1)); --back) {
-				std::swap(*back, *(back - 1));
+				Swap(*back, *(back - 1));
 			}
 		}
 	}
 
 	// Get pointers to first element and last element (excluded), comparer function.
-	// Implement quick sort algorithm with some optimtzations.
+	// Implement quick sort algorithm.
 	template<typename T, typename Compare>
 	static void QuickSort(T first, T last, Compare comp) {
-		int length = std::distance(first, last);
+		if (last - first > 1) {
+			auto bound = Partition(first, last - 1, comp) + 1;
+			QuickSort(first, bound, comp);
+			QuickSort(bound, last, comp);
+		}
+	}
 
-		if (length > 1) {
-			if (length <= kShortIntervalLength) {
+	// Get pointers to first element and last element (excluded), comparer function.
+	// Implement quick sort with tail recursion elimination.
+	template<typename T, typename Compare>
+	static void OptimizedQuickSort(T first, T last, Compare comp) {
+		while (last - first > 1) {
+			if (last - first <= kShortIntervalLength) {
 				InsertionSort(first, last, comp);
-				return;
+				break;
 			}
 
-			auto bounds = Partition(first, last, comp);		
-			T left_bound = std::get<0>(bounds);
-			T right_bound = std::get<1>(bounds);		
+			auto bound = Partition(first, last - 1, comp) + 1;
 
-			if (std::distance(first, left_bound) > std::distance(right_bound, last)) {
-				IterativeQuickSort(first, left_bound, comp);
-				QuickSort(right_bound, last, comp);				
+			if (bound - first > last - bound) {
+				OptimizedQuickSort(bound, last, comp);
+				last = bound;
 			}
 			else {
-				IterativeQuickSort(right_bound, last, comp);
-				QuickSort(first, left_bound, comp);
+				OptimizedQuickSort(first, bound, comp);
+				first = bound;
 			}
 		}
 	}
 
 private:
 	// Max interval length for insertion sort.
-	static const int kShortIntervalLength = 10;
+	static const int kShortIntervalLength = 11;
 
-	// Get pointers to first element and last element (excluded), comparer function.
-	// Implement iterative variation of quick sort algorithm.
-	template<typename T, typename Compare>
-	static void IterativeQuickSort(T first, T last, Compare comp) {
-		std::stack<T> stack;
-		stack.push(first);
-		stack.push(last);
-
-		while (!stack.empty()) {
-			last = stack.top();
-			stack.pop();
-			first = stack.top();
-			stack.pop();
-			
-			auto bounds = Partition(first, last, comp);
-			int left_size = std::distance(first, std::get<0>(bounds));
-			int right_size = std::distance(std::get<1>(bounds), last);
-
-			if (left_size > 1) {
-				if (left_size <= kShortIntervalLength) {
-					InsertionSort(first, std::get<0>(bounds), comp);
-				}
-				else {
-					stack.push(first);
-					stack.push(std::get<0>(bounds));
-				}
-			}
-			if (right_size > 1) {
-				if (right_size <= kShortIntervalLength) {
-					InsertionSort(std::get<1>(bounds), last, comp);
-				}
-				else {
-					stack.push(std::get<1>(bounds));
-					stack.push(last);
-				}
-			}
-		}
-	}
-
-	// Get pointers to first element and last element (excluded), comparer function.
-	// Return tuple which contain bounds for left and for right subsequences.
+	// Get pointers to first element, last element and comparer function.
+	// Return pointer to bound of partition.
 	// Method move elements, that greater than pivot, righter
 	// and move elements, that less than pivot, lefter.
 	template<typename T, typename Compare>
-	static std::tuple<T, T> Partition(T first, T last, Compare comp) {
-		auto pivot = GetPivot(first, last - 1, comp);
-		int left = 0;
-		int right = std::distance(first, last) - 1;
+	static T Partition(T first, T last, Compare comp) {
+		auto pivot = GetPivot(first, last, comp);
 
-		for (; left <= right; ++left, --right) {
-			for (; comp(first[left], pivot); ++left);
-			for (; comp(pivot, first[right]); --right);
-			if (left > right) break;
-			std::swap(first[left], first[right]);
-		}	
+		for (; first <= last; ++first, --last) {
+			for (; comp(*first, pivot); ++first);
+			for (; comp(pivot, *last); --last);
+			if (first >= last) break;
+			std::swap(*first, *last);
+		}
 
-		return std::tuple<T, T>(std::next(first, right + 1), std::next(first, left));
+		return last;
 	}
 
-	// Get pointers to first, last elements and comparer function.
+	// Get pointers to first element, last element and comparer function.
 	// Return pivot for quick sort algorithm which calculated as median of
 	// first, last and middle elements.
 	template<typename T, typename Compare>
@@ -130,6 +92,15 @@ private:
 			else if (comp(*middle, *last)) return *last;
 			else return *middle;
 		}
+	}
+
+	// Get references to elements, which should be swapped.
+	// Method implement swap algorithm.
+	template<typename T>
+	static void Swap(T& t1, T& t2) {
+		T temp = std::move(t1);
+		t1 = std::move(t2);
+		t2 = std::move(temp);
 	}
 };
 

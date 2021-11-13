@@ -250,7 +250,7 @@ TYPED_TEST_P(SequencesFixture, GetReverceIterator_EnumerateAndSetValues_AllSetVa
 
 		for (Array<TypeParam>::Iterator arr_rit = arr.GetReverceIterator(); arr_rit.HasCurrent(); arr_rit.Next()) {
 			arr_rit.Set(*items_rit);
-++items_rit;
+			++items_rit;
 		}
 
 		EXPECT_TRUE(IsEqual(arr, items));
