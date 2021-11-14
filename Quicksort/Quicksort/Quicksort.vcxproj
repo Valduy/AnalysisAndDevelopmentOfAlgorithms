@@ -148,9 +148,6 @@
     <ClInclude Include="SortAlgorithms.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="Experiments.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

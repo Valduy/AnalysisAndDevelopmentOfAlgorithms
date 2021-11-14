@@ -14,7 +14,13 @@ public:
 	template<typename T>
 	class ConstIter {
 	public:
-		ConstIter(T* first, T* last, std::function<T*(T*)> next, std::function<bool(T*, T*)> has_next)
+		using difference_type = T;
+		using value_type = T;
+		using pointer = const T*;
+		using reference = const T&;
+		using iterator_category = std::bidirectional_iterator_tag;
+
+		ConstIter(T* first, T* last, std::function<T*(T*, int)> next, std::function<bool(T*, T*)> has_next)
 			: temp_(first)
 			, last_(last)
 			, next_(next)
@@ -26,7 +32,11 @@ public:
 		}
 
 		void Next() {
-			temp_ = next_(temp_);
+			temp_ = next_(temp_, 1);
+		}
+
+		void Prev() {
+			temp_ = next_(temp_, -1);
 		}
 
 		bool HasCurrent() {
@@ -44,8 +54,23 @@ public:
 			return temp;
 		}
 
+		ConstIter<T>& operator--() {
+			Prev();
+			return *this;
+		}
+
+		ConstIter<T> operator--(int) {
+			ConstIter<T> temp = *this;
+			--*this;
+			return temp;
+		}
+
 		const T& operator*() const {
 			return Get();
+		}
+
+		const T* operator->() const {
+			return temp_;
 		}
 
 		friend bool operator < (const ConstIter<T>& lhs, const ConstIter<T>& rhs) {
@@ -75,14 +100,20 @@ public:
 	protected:
 		T* temp_;
 		T* last_;
-		std::function<T*(T*)> next_;
+		std::function<T*(T*, int)> next_;
 		std::function<bool(T*, T*)> has_next_;
 	};
 
 	template<typename T>
 	class Iter : public ConstIter<T>{
 	public:
-		Iter(T* first, T* last, std::function<T* (T*)> next, std::function<bool(T*, T*)> has_next)
+		using difference_type = T;
+		using value_type = T;
+		using pointer = T*;
+		using reference = T&;
+		using iterator_category = std::bidirectional_iterator_tag;
+
+		Iter(T* first, T* last, std::function<T* (T*, int)> next, std::function<bool(T*, T*)> has_next)
 			: ConstIterator(first, last, next, has_next)
 		{}
 
@@ -101,8 +132,23 @@ public:
 			return temp;
 		}
 
-		T& operator*() const {
+		Iter<T>& operator--() {
+			this->Prev();
+			return *this;
+		}
+
+		Iter<T> operator--(int) {
+			Iter<T> temp = *this;
+			--*this;
+			return temp;
+		}
+
+		T& operator*() {
 			return *(this->temp_);
+		}
+
+		T* operator->() {
+			return this->temp_;
 		}
 	};
 
@@ -151,7 +197,7 @@ public:
 		}
 
 		new(array_ + size_) T(value);
-		BubbleDown(index, size_ - index);
+		BubbleDown(size_, size_ - index);
 		++size_;
 		return index;
 	}
@@ -221,12 +267,12 @@ private:
 	int capacity_;
 	T* array_;
 
-	static T* GetNextRight(T* temp) {
-		return temp + 1;
+	static T* GetNextRight(T* temp, int step) {
+		return temp + step;
 	}
 
-	static T* GetNextLeft(T* temp) {
-		return temp - 1;
+	static T* GetNextLeft(T* temp, int step) {
+		return temp - step;
 	}
 
 	static bool HasNextRight(const T* temp, const T* end) {
@@ -262,9 +308,13 @@ private:
 	}	
 
 	void BubbleDown(int index, int count) {
-		for (int i = index + count - 1; i >= index; --i) {
-			std::swap(array_[i], array_[i + 1]);
+		T temp = std::move(array_[index]);
+
+		for (int step = 0; step < count; ++step) {
+			array_[index - step] = std::move(array_[index - step - 1]);
 		}
+
+		array_[index - count] = std::move(temp);
 	}
 
 	void ShiftLeft(int index, int count) {

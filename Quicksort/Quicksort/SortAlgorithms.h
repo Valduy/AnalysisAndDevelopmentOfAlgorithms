@@ -7,14 +7,18 @@ public:
 	// Implement insertion sort algorithm.
 	template<typename T, typename Compare>
 	static void InsertionSort(T first, T last, Compare comp) {
-		if (first == last) return;
+		if (std::distance(first, last) <= 1) return;
 
-		for (T forward = first + 1; forward != last; ++forward) {
+		for (T forward = std::next(first, 1); forward != last; std::advance(forward, 1)) {	
+			auto temp = std::move(*forward);
 			T back = forward;
 
-			for (; back > first && comp(*back, *(back - 1)); --back) {
-				Swap(*back, *(back - 1));
+			while (back != first && comp(temp, *std::prev(back))) {
+				*back = std::move(*std::prev(back));
+				std::advance(back, -1);
 			}
+
+			*back = std::move(temp);
 		}
 	}
 
@@ -22,7 +26,7 @@ public:
 	// Implement quick sort algorithm.
 	template<typename T, typename Compare>
 	static void QuickSort(T first, T last, Compare comp) {
-		if (last - first > 1) {
+		if (std::distance(first, last) > 1) {
 			auto bound = Partition(first, last - 1, comp) + 1;
 			QuickSort(first, bound, comp);
 			QuickSort(bound, last, comp);
@@ -33,15 +37,15 @@ public:
 	// Implement quick sort with tail recursion elimination.
 	template<typename T, typename Compare>
 	static void OptimizedQuickSort(T first, T last, Compare comp) {
-		while (last - first > 1) {
-			if (last - first <= kShortIntervalLength) {
+		while (true) {
+			if (std::distance(first, last) <= kShortIntervalLength) {
 				InsertionSort(first, last, comp);
 				break;
 			}
 
-			auto bound = Partition(first, last - 1, comp) + 1;
+			auto bound = std::next(Partition(first, std::next(last, -1), comp), 1);
 
-			if (bound - first > last - bound) {
+			if (std::distance(first, bound) > std::distance(bound, last)) {
 				OptimizedQuickSort(bound, last, comp);
 				last = bound;
 			}
@@ -54,7 +58,7 @@ public:
 
 private:
 	// Max interval length for insertion sort.
-	static const int kShortIntervalLength = 11;
+	static const int kShortIntervalLength = 16;
 
 	// Get pointers to first element, last element and comparer function.
 	// Return pointer to bound of partition.
@@ -64,11 +68,11 @@ private:
 	static T Partition(T first, T last, Compare comp) {
 		auto pivot = GetPivot(first, last, comp);
 
-		for (; first <= last; ++first, --last) {
-			for (; comp(*first, pivot); ++first);
-			for (; comp(pivot, *last); --last);
-			if (first >= last) break;
-			std::swap(*first, *last);
+		for (; first != std::next(last); std::advance(first, 1), std::advance(last, -1)) {
+			for (; comp(*first, pivot); std::advance(first, 1));
+			for (; comp(pivot, *last); std::advance(last, -1));
+			if (first == last || first == std::next(last)) break;
+			Swap(*first, *last);
 		}
 
 		return last;
