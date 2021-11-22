@@ -1,8 +1,12 @@
 #include <Windows.h>
-#include "FixedSizedAllocator.h"
+#include "../MemoryAllocatorsLibrary/FixedSizedAllocator.h"
 
 int main() {
-	SYSTEM_INFO system_info;
-	GetSystemInfo(&system_info);
+	FixedSizedAllocator FSA(sizeof(double), 5);
+	FSA.Init();
+	double* memory = (double*)FSA.Alloc();
+	*memory = 9.1;
+	FSA.Free(memory);
+	FSA.Destroy();
 	return 0;
 }
