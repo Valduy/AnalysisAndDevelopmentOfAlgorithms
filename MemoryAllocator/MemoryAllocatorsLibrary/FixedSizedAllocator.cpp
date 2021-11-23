@@ -62,21 +62,21 @@ void FixedSizedAllocator::Free(void* p) {
 }
 
 Page* FixedSizedAllocator::AllocPage() {
-	buffer_ = VirtualAlloc(
+	Page* page = (Page*)VirtualAlloc(
 		NULL,
 		page_size_,
 		MEM_COMMIT | MEM_RESERVE,
 		PAGE_READWRITE);
 
 	// If allocation failed.
-	if (buffer_ == nullptr) {
+	if (page == nullptr) {
 		return nullptr;
 	}
 
-	Page* page = (Page*)buffer_;
 	page->next = nullptr;
 	page->head = -1;
 	page->initialized_count = 0;
+	return page;
 }
 
 void FixedSizedAllocator::FreePage(Page* page) {
@@ -86,7 +86,7 @@ void FixedSizedAllocator::FreePage(Page* page) {
 Page* FixedSizedAllocator::GetAvaliablePage() {
 	Page* page = (Page*)buffer_;
 
-	while (page->next != nullptr && IsAvaliable(page)) {
+	while (page->next != nullptr && !IsAvaliable(page)) {
 		page = (Page*)page->next;
 	}
 
@@ -142,7 +142,7 @@ Page* FixedSizedAllocator::GetBlockOwnerPage(const Block* block) {
 }
 
 bool FixedSizedAllocator::IsBlockBelongToPage(Page* page, const void* block) {
-	return page <= block && block < page + page_size_;
+	return (char*)page <= (char*)block && (char*)block < (char*)(page + page_size_);
 }
 
 bool FixedSizedAllocator::IsFree(Page* page) {
