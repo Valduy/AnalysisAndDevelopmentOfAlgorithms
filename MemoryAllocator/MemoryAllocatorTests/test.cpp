@@ -10,8 +10,19 @@ void Free(FixedSizedAllocator<block_size>* FSA, int** pointers, size_t size);
 template<typename T>
 bool ArePointersSequential(T** pointers, size_t size);
 
+TEST(FixedSizedAllocator, Alloc_AllocWhenBlocksPerPageIs0_ReturnNull) {
+	FixedSizedAllocator<sizeof(int)> FSA(0);
+	FSA.Init();
+
+	void* p = FSA.Alloc();
+
+	EXPECT_EQ(p, nullptr);
+
+	FSA.Destroy();
+}
+
 TEST(FixedSizedAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
-	const size_t blocks_count = 4;
+	const size_t blocks_count = sizeof(int);
 	FixedSizedAllocator<blocks_count> FSA(blocks_count);
 	int* blocks[blocks_count];
 
@@ -26,7 +37,7 @@ TEST(FixedSizedAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
 }
 
 TEST(FixedSizedAllocator, Alloc_AllocMoreThenPage_MemoryAllocated) {
-	const size_t blocks_count = 4;
+	const size_t blocks_count = sizeof(int);
 	FixedSizedAllocator<blocks_count> FSA(blocks_count);
 	int* page1[blocks_count];
 	int* page2[blocks_count];

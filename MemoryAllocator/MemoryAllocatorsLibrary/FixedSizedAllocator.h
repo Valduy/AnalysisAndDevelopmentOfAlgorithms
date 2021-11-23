@@ -48,6 +48,10 @@ public:
 	void* Alloc() {
 		assert(buffer_ != nullptr && "Allocator not initialized.");
 
+		if (blocks_per_page_ == 0) {
+			return nullptr;
+		}
+
 		Page* page = GetAvaliablePage();
 
 		if (page == nullptr) {
