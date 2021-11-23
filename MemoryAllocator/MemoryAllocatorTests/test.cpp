@@ -1,15 +1,18 @@
 #include "pch.h"
 #include "../MemoryAllocatorsLibrary/FixedSizedAllocator.h"
 
-void AllocAndFill(FixedSizedAllocator* FSA, int** pointers, size_t size);
-void Free(FixedSizedAllocator* FSA, int** pointers, size_t size);
+template<size_t block_size>
+void AllocAndFill(FixedSizedAllocator<block_size>* FSA, int** pointers, size_t size);
+
+template<size_t block_size>
+void Free(FixedSizedAllocator<block_size>* FSA, int** pointers, size_t size);
 
 template<typename T>
 bool ArePointersSequential(T** pointers, size_t size);
 
 TEST(FixedSizedAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
 	const size_t blocks_count = 4;
-	FixedSizedAllocator FSA(sizeof(int), blocks_count);
+	FixedSizedAllocator<blocks_count> FSA(blocks_count);
 	int* blocks[blocks_count];
 
 	FSA.Init();
@@ -24,7 +27,7 @@ TEST(FixedSizedAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
 
 TEST(FixedSizedAllocator, Alloc_AllocMoreThenPage_MemoryAllocated) {
 	const size_t blocks_count = 4;
-	FixedSizedAllocator FSA(sizeof(int), blocks_count);
+	FixedSizedAllocator<blocks_count> FSA(blocks_count);
 	int* page1[blocks_count];
 	int* page2[blocks_count];
 
@@ -41,14 +44,16 @@ TEST(FixedSizedAllocator, Alloc_AllocMoreThenPage_MemoryAllocated) {
 	FSA.Destroy();
 }
 
-void AllocAndFill(FixedSizedAllocator* FSA, int** pointers, size_t size) {
+template<size_t block_size>
+void AllocAndFill(FixedSizedAllocator<block_size>* FSA, int** pointers, size_t size) {
 	for (size_t i = 0; i < size; ++i) {
 		pointers[i] = (int*)(*FSA).Alloc();
 		*pointers[i] = i;
 	}
 }
 
-void Free(FixedSizedAllocator* FSA, int** pointers, size_t size) {
+template<size_t block_size>
+void Free(FixedSizedAllocator<block_size>* FSA, int** pointers, size_t size) {
 	for (size_t i = 0; i < size; ++i) {
 		(*FSA).Free(pointers[i]);
 	}
