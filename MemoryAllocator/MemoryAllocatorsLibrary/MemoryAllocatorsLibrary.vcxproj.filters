@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\FixedSizedAllocator">
+      <UniqueIdentifier>{7785174f-a6a5-4020-bcd0-23ef7d622a72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoalesceAllocator">
+      <UniqueIdentifier>{9945e4e9-e6a2-458d-9791-4d07eae918f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -21,14 +27,17 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files\FixedSizedAllocator</Filter>
+    </ClInclude>
     <ClInclude Include="FixedSizedAllocator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FixedSizedAllocator</Filter>
     </ClInclude>
     <ClInclude Include="Page.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\FixedSizedAllocator</Filter>
     </ClInclude>
-    <ClInclude Include="Block.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="CoalesceAllocator.h">
+      <Filter>Header Files\CoalesceAllocator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

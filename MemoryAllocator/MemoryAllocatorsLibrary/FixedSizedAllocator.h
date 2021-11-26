@@ -2,38 +2,48 @@
 
 #include <Windows.h>
 #include <assert.h>
-#include "Page.h"
-#include "Block.h"
+
+namespace fixed {
+
+struct Page {
+	void* next;
+	int head;
+	size_t initialized_count;
+};
+
+struct Block {
+	int next;
+};
 
 template<size_t block_size>
 class FixedSizedAllocator {
 	static_assert(block_size >= sizeof(Block), "Block size should be greater then 4 bites.");
 
 public:
-	const int kHeaderOffset = sizeof(Page);
+	const size_t kHeaderOffset = sizeof(Page);
 
 	FixedSizedAllocator(size_t blocks_per_page)
-		: page_size_(kHeaderOffset + block_size * blocks_per_page)
+		: page_(nullptr)
+		, page_size_(kHeaderOffset + block_size * blocks_per_page)
 		, blocks_per_page_(blocks_per_page)
-		, buffer_(nullptr)
 	{}
 
 	~FixedSizedAllocator() {
-		assert(buffer_ == nullptr && "Allocator not deinitialized.");
+		assert(page_ == nullptr && "Allocator not deinitialized.");
 	}
 
-	size_t GetSize() {
+	size_t GetBlockSize() {
 		return block_size;
 	}
 
 	void Init() {
-		buffer_ = AllocPage();
+		page_ = AllocPage();
 	}
 
 	void Destroy() {
-		assert(buffer_ != nullptr && "Allocator not initialized.");
+		assert(page_ != nullptr && "Allocator not initialized.");
 
-		Page* page = (Page*)buffer_;
+		Page* page = (Page*)page_;
 
 		while (page != nullptr) {
 			assert(IsFree(page) && "Memory leak occurs.");
@@ -42,11 +52,11 @@ public:
 			FreePage(temp);
 		}
 
-		buffer_ = nullptr;
+		page_ = nullptr;
 	}
 
 	void* Alloc() {
-		assert(buffer_ != nullptr && "Allocator not initialized.");
+		assert(page_ != nullptr && "Allocator not initialized.");
 
 		if (blocks_per_page_ == 0) {
 			return nullptr;
@@ -63,7 +73,7 @@ public:
 	}
 
 	void Free(void* p) {
-		assert(buffer_ != nullptr && "Allocator not initialized.");
+		assert(page_ != nullptr && "Allocator not initialized.");
 
 		Block* block = (Block*)p;
 		Page* page = GetBlockOwnerPage(block);
@@ -83,8 +93,8 @@ public:
 		// TODO:
 	}
 
-private:	
-	void* buffer_;
+private:
+	void* page_;
 	size_t page_size_;
 	size_t blocks_per_page_;
 
@@ -111,9 +121,13 @@ private:
 	}
 
 	Page* GetAvaliablePage() {
-		Page* page = (Page*)buffer_;
+		Page* page = (Page*)page_;
 
-		while (page->next != nullptr && !IsAvaliable(page)) {
+		while (page->next != nullptr) {
+			if (IsAvaliable(page)) {
+				return page;
+			}
+			
 			page = (Page*)page->next;
 		}
 
@@ -159,7 +173,7 @@ private:
 	}
 
 	Page* GetBlockOwnerPage(const Block* block) {
-		Page* page = (Page*)buffer_;
+		Page* page = (Page*)page_;
 
 		while (page != nullptr && !IsBlockBelongToPage(page, block)) {
 			page = (Page*)page->next;
@@ -194,3 +208,5 @@ private:
 		page->head = ((char*)block - (char*)page_data_address) / block_size;
 	}
 };
+
+} // namespace fixed

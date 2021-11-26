@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="CoalesceAllocator.h" />
     <ClInclude Include="FixedSizedAllocator.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Page.h" />
