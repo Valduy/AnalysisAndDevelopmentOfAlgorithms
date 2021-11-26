@@ -150,7 +150,7 @@ private:
 
 	Block* GetPageBlock(Page* page, int block_number) {
 		assert(block_number >= 0
-			&& kHeaderOffset + block_size * block_number < page_size_
+			&& block_number < blocks_per_page_
 			&& "Block number is out of page range.");
 
 		void* page_data_address = GetPageDataAddress(page);
