@@ -1,27 +1,31 @@
 #pragma once
 
+#include <Windows.h>
 #include <assert.h>
 
 namespace coalesce {
 
 struct Block {
-	Block* prev;
-	Block* next;
 	size_t size;
+	Block* prev;
+	Block* next;	
 };
 
 struct Page {
-	void* next;
-	Block* head;
+	Page* next;
+	Block* first;
+	Block* last;
 };
+
+const size_t kHeaderOffset = sizeof(Page);
+const size_t kBlockOffset = sizeof(size_t);
+const size_t kMinDataSize = sizeof(Block) - kBlockOffset;
 
 template<size_t buffer_size>
 class CoalesceAllocator {
-	static_assert()
+	static_assert(buffer_size >= sizeof(Block), "Buffer size is too small.");
 
 public: 
-	const size_t kHeaderOffset = sizeof(Page);
-
 	CoalesceAllocator() 
 		: page_(nullptr)
 		, page_size_(kHeaderOffset + buffer_size)
@@ -42,6 +46,16 @@ public:
 	virtual void Destroy() {
 		assert(page_ != nullptr && "Allocator not initialized.");
 
+		Page* page = page_;
+
+		while (page != nullptr) {
+			assert(IsFree(page) && "Memory leak occurs.");
+			Page* temp = page;
+			page = (Page*)page->next;
+			FreePage(temp);
+		}
+
+		page_ = nullptr;
 	}
 
 	virtual void* Alloc(size_t size) {
@@ -52,16 +66,25 @@ public:
 			return nullptr;
 		}
 
-		if (size <= buffer_size) {
+		if (size > buffer_size) {
 			return nullptr;
 		}
 
-		Block* block = ReserveAvaliableBlock(size);
-		return block;
+		Block* block = ReserveBlock(max(kMinDataSize, size));
+		return GetDataAddress(block);
 	}
 
 	virtual void Free(void* p) {
 		assert(page_ != nullptr && "Allocator not initialized.");
+
+		Block* block = GetBlockAddress(p);
+		Page* page = GetBlockOwnerPage(block);
+
+		assert(page != nullptr && "Not correct pointer.");
+
+		if (page != nullptr) {
+			FreeBlock(page, block);
+		}
 	}
 
 	virtual void DumpStat() const {
@@ -73,8 +96,16 @@ public:
 	}
 
 private:
-	void* page_;
+	Page* page_;
 	size_t page_size_;
+
+	void* GetDataAddress(Block* block) {
+		return (char*)block + kBlockOffset;
+	}
+
+	Block* GetBlockAddress(void* p) {
+		return  (Block*)((char*)p - kBlockOffset);
+	}
 
 	Page* AllocPage() {
 		Page* page = (Page*)VirtualAlloc(
@@ -89,46 +120,48 @@ private:
 		}
 
 		page->next = nullptr;
-		page->head = (char*) page + kHeaderOffset;
-		Block* block = page->head;
+		page->first = (Block*)((char*) page + kHeaderOffset);
+		page->last = page->first;
+		Block* block = page->first;
 		block->prev = nullptr;
 		block->next = nullptr;
-		block->size = buffer_size;
+		block->size = buffer_size - kBlockOffset;
 		return page;
 	}
 
-	Block* ReserveAvaliableBlock(size_t size) {
-		Page* page = (Page*)page_;
+	void FreePage(Page* page) {
+		VirtualFree(page, 0, MEM_RELEASE);
+	}
+
+	Block* ReserveBlock(size_t size) {
+		Page* page = page_;
 		Block* block = nullptr;
 
 		while (page->next != nullptr)
 		{
 			if (TryGetAvaliableBlock(page, size, &block)) {
-				ReserveBlock(page, block);
-				return block;
+				return ReserveBlock(page, block, size);
 			}
 		}
 
 		if (TryGetAvaliableBlock(page, size, &block)) {
-			ReserveBlock(page, block);
-			return block;
+			return ReserveBlock(page, block, size);
 		}
 
 		page->next = AllocPage();
 		TryGetAvaliableBlock(page, size, &block);
-		ReserveBlock(page, block);
-		return block;
+		return ReserveBlock(page, block, size);
 	}
 
 	bool TryGetAvaliableBlock(Page* page, size_t size, Block** result) {
-		*block = GetFirstAvaliableBlock(page, size);
-		return block != nullptr;
+		*result = GetFirstAvaliableBlock(page, size);
+		return *result != nullptr;
 	}
 
 	Block* GetFirstAvaliableBlock(Page* page, size_t size) {
-		Block* block = page->head;
+		Block* block = page->first;
 
-		for (Block* block = page->head; block != nullptr; block = block->next) {
+		for (Block* block = page->first; block != nullptr; block = block->next) {
 			if (block->size >= size) {
 				return block;
 			}
@@ -137,24 +170,150 @@ private:
 		return nullptr;
 	}
 
-	void* ReserveBlock(Page* page, Block* block, size_t size) {
+	Block* ReserveBlock(Page* page, Block* block, size_t size) {
 		// If: we can't cut piece of block.
-		if (block->size - size <= sizeof(Block)) {
-			if (block->prev == nullptr) {
-				page->head = block->next;
-			}
-			else {
-				block->prev->next = block->next;
-			}
-
-			return nullptr;
+		if (block->size - size <= kMinDataSize) {
+			RemoveBlock(page, block);
+			return block;
 		}
 		else {
-			void* piece = (char*)block + block->size - size;
-			block->size -= size;
-			return piece;
+			return CutPieceOfBlock(block, size);
 		}
+	}
+
+	void RemoveBlock(Page* page, Block* block) {
+		if (block->prev == nullptr) {
+			page->first = block->next;
+		}
+		else {
+			block->prev->next = block->next;
+		}
+
+		if (block->next == nullptr) {
+			page->last = block->prev;
+		}
+		else {
+			block->next->prev = block->prev;
+		}
+	}
+
+	Block* CutPieceOfBlock(Block* block, size_t size) {
+		Block* piece = (Block*)((char*)GetDataAddress(block) + block->size - size - kBlockOffset);
+		block->size -= (size + kBlockOffset);
+		piece->size = size;
+		return piece;
+	}
+
+	Page* GetBlockOwnerPage(Block* block) {
+		for (Page* page = page_; page != nullptr; page = page->next) {
+			if (IsBlockBelongToPage(page, block)) {
+				return page;
+			}
+		}
+
+		return nullptr;
+	}
+
+	bool IsBlockBelongToPage(Page* page, const void* block) {
+		return (char*)page <= (char*)block && (char*)block < (char*)(page + page_size_);
+	}
+
+	bool IsFree(Page* page) {
+		Block* block = (Block*)((char*)page + kHeaderOffset);
+		return block->size == buffer_size - kBlockOffset;
+	}
+
+	void FreeBlock(Page* page, Block* block) {
+		InsertBlock(page, block);
+		TryMergeWithNeighbours(page, block);
+	}
+
+	void InsertBlock(Page* page, Block* block) {
+		if (page->first == nullptr) {
+			InsertBeginning(page, block);
+			return;
+		}
+				
+		for (Block* temp = page->first; temp != nullptr; temp = temp->next) {
+			if (temp > block) {
+				InsertBefore(page, temp, block);
+				return;
+			}
+		}
+
+		InsertEnd(page, block);
+	}
+
+	void InsertAfter(Page* page, Block* block, Block* new_block) {
+		new_block->prev = block;
+		new_block->next = block->next;
+
+		if (block->next = nullptr) {
+			page->last = new_block;
+		}
+		else {
+			block->next->prev = new_block;
+		}
+
+		block->next = new_block;
+	}
+
+	void InsertBefore(Page* page, Block* block, Block* new_block) {
+		new_block->next = block;
+		new_block->prev = block->prev;
+
+		if (block->prev == nullptr) {
+			page->first = new_block;
+		}
+		else {
+			block->prev->next = block;
+		}
+
+		block->prev = new_block;
+	}
+
+	void InsertBeginning(Page* page, Block* block) {
+		if (page->first == nullptr) {
+			page->first = block;
+			page->last = block;
+			block->prev = nullptr;
+			block->next = nullptr;
+		}
+		else {
+			InsertBefore(page, page->first, block);
+		}
+	}
+
+	void InsertEnd(Page* page, Block* block) {
+		if (page->last == nullptr) {
+			InsertBeginning(page, block);
+		}
+		else {
+			InsertAfter(page, page->last, block);
+		}
+	}
+
+	void TryMergeWithNeighbours(Page* page, Block* block) {
+		if (block->prev != nullptr && IsLeftNeighbour(block, block->prev)) {
+			MergeWithNext(block->prev, block);
+		}
+		if (block->next != nullptr && IsRightNeighbour(block, block->next)) {
+			MergeWithNext(block, block->next);
+		}
+	}
+
+	bool IsLeftNeighbour(Block* block, Block* neighbour) {
+		return (char*)neighbour + kBlockOffset + neighbour->size == (char*)block;
+	}
+
+	bool IsRightNeighbour(Block* block, Block* neighbour) {
+		return (char*)block + kBlockOffset + block->size == (char*)neighbour;
+	}
+
+	void MergeWithNext(Block* left, Block* right) {
+		left->next = right->next;
+		left->size += kBlockOffset + right->size;
 	}
 };
 
-}
+} // namespace coalesce

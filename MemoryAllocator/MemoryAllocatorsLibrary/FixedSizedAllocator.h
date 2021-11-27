@@ -6,7 +6,7 @@
 namespace fixed {
 
 struct Page {
-	void* next;
+	Page* next;
 	int head;
 	size_t initialized_count;
 };
@@ -43,12 +43,12 @@ public:
 	void Destroy() {
 		assert(page_ != nullptr && "Allocator not initialized.");
 
-		Page* page = (Page*)page_;
+		Page* page = page_;
 
 		while (page != nullptr) {
 			assert(IsFree(page) && "Memory leak occurs.");
 			Page* temp = page;
-			page = (Page*)page->next;
+			page = page->next;
 			FreePage(temp);
 		}
 
@@ -94,7 +94,7 @@ public:
 	}
 
 private:
-	void* page_;
+	Page* page_;
 	size_t page_size_;
 	size_t blocks_per_page_;
 
@@ -121,14 +121,14 @@ private:
 	}
 
 	Page* GetAvaliablePage() {
-		Page* page = (Page*)page_;
+		Page* page = page_;
 
 		while (page->next != nullptr) {
 			if (IsAvaliable(page)) {
 				return page;
 			}
 			
-			page = (Page*)page->next;
+			page = page->next;
 		}
 
 		if (IsAvaliable(page)) {
@@ -136,7 +136,7 @@ private:
 		}
 
 		page->next = AllocPage();
-		return (Page*)page->next;
+		return page->next;
 	}
 
 	bool IsAvaliable(Page* page) {
@@ -173,13 +173,13 @@ private:
 	}
 
 	Page* GetBlockOwnerPage(const Block* block) {
-		Page* page = (Page*)page_;
-
-		while (page != nullptr && !IsBlockBelongToPage(page, block)) {
-			page = (Page*)page->next;
+		for (Page* page = page_; page != nullptr; page = page->next) {
+			if (IsBlockBelongToPage(page, block)) {
+				return page;
+			}
 		}
 
-		return page;
+		return nullptr;
 	}
 
 	bool IsBlockBelongToPage(Page* page, const void* block) {

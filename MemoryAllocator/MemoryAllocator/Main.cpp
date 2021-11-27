@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <iostream>
 #include "../MemoryAllocatorsLibrary/FixedSizedAllocator.h"
 #include "../MemoryAllocatorsLibrary/CoalesceAllocator.h"
 
@@ -10,7 +11,8 @@ int main() {
 	FSA.Free(memory);
 	FSA.Destroy();
 
-	coalesce::CoalesceAllocator<512> CA();
+	//coalesce::CoalesceAllocator<512> CA();
+	std::cout << sizeof(coalesce::Block) << "\n";
 
 	return 0;
 }
