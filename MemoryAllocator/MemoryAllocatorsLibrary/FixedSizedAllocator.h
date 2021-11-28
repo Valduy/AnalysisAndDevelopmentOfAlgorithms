@@ -90,6 +90,11 @@ public:
 		}
 	}
 
+	bool IsBelongTo(void* p) {
+		Block* block = (Block*)p;
+		return GetBlockOwnerPage(block) != nullptr;
+	}
+
 	virtual void DumbStat() const {
 		// TODO:
 	}

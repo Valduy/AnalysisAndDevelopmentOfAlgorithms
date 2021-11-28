@@ -39,6 +39,9 @@
     <ClInclude Include="SizelessAllocator.h">
       <Filter>Header Files\SizelessAllocator</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemoryAllocatorsLibrary.cpp">

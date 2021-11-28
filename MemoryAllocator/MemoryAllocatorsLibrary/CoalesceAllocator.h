@@ -98,6 +98,11 @@ public:
 		}
 	}
 
+	virtual bool IsBelongTo(void* p) {
+		Block* block = GetBlockAddress(p);
+		return GetBlockOwnerPage(block) != nullptr;
+	}
+
 	virtual void DumpStat() const {
 
 	}

@@ -37,6 +37,18 @@ public:
 		FreePage(page);
 	}
 
+	virtual bool IsBelongTo(void* p) {
+		Page* page = GetPageAddress(p);
+
+		for (Page* temp = page_; temp != nullptr; temp = temp->next) {
+			if (page == temp) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	virtual void DumbStat() const {
 
 	}
