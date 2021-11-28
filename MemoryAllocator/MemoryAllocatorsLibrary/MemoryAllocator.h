@@ -6,7 +6,7 @@
 
 namespace manager {
 
-const size_t kMaxCoalesceSize = 12288 - coalesce::kHeaderOffset;
+const size_t kMaxCoalesceSize = 4096 * 3 - coalesce::kBlockOffset;
 
 class MemoryAllocator {
 public:
@@ -141,5 +141,5 @@ private:
 	}
 };
 
-}
+} // namespace manager
 

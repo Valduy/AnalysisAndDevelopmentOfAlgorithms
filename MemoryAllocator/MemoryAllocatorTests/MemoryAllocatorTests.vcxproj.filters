@@ -1,9 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="CoalesceAllocatorTests.cpp" />
-    <ClCompile Include="FixedSizedAllocatorTests.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="CoalesceAllocatorTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="FixedSizedAllocatorTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryAllocatorTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="SizelessAllocatorTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -17,6 +27,9 @@
   <ItemGroup>
     <Filter Include="Util">
       <UniqueIdentifier>{0c2d007b-f2de-4238-8d31-57e946d5539f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{58f2ee0d-f7a1-43c4-88f1-3e137e38571a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -237,7 +237,7 @@ private:
 	}
 
 	bool IsBlockBelongToPage(Page* page, const void* block) {
-		return (char*)page <= (char*)block && (char*)block < (char*)(page + page_size_);
+		return (char*)page <= (char*)block && (char*)block < (char*)page + page_size_;
 	}
 
 	bool IsFree(Page* page) {
