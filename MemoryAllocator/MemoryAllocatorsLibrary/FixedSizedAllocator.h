@@ -15,13 +15,13 @@ struct Block {
 	int next;
 };
 
+const size_t kHeaderOffset = sizeof(Page);
+
 template<size_t block_size>
 class FixedSizedAllocator {
 	static_assert(block_size >= sizeof(Block), "Block size should be greater then 4 bites.");
 
 public:
-	const size_t kHeaderOffset = sizeof(Page);
-
 	FixedSizedAllocator(size_t blocks_per_page)
 		: page_(nullptr)
 		, page_size_(kHeaderOffset + block_size * blocks_per_page)
@@ -74,6 +74,11 @@ public:
 
 	void Free(void* p) {
 		assert(page_ != nullptr && "Allocator not initialized.");
+		assert(p != nullptr && "Try free null.");
+
+		if (p == nullptr) {
+			return;
+		}
 
 		Block* block = (Block*)p;
 		Page* page = GetBlockOwnerPage(block);

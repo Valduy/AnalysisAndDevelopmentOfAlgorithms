@@ -29,6 +29,7 @@ public:
 	CoalesceAllocator() 
 		: page_(nullptr)
 		, page_size_(kHeaderOffset + buffer_size)
+		, max_data_size_(buffer_size - kBlockOffset)
 	{}
 
 	virtual ~CoalesceAllocator() {
@@ -66,7 +67,7 @@ public:
 			return nullptr;
 		}
 
-		if (size > buffer_size) {
+		if (size > max_data_size_) {
 			return nullptr;
 		}
 
@@ -76,6 +77,11 @@ public:
 
 	virtual void Free(void* p) {
 		assert(page_ != nullptr && "Allocator not initialized.");
+		assert(p != nullptr && "Try free null.");
+
+		if (p == nullptr) {
+			return;
+		}
 
 		Block* block = GetBlockAddress(p);
 		Page* page = GetBlockOwnerPage(block);
@@ -98,6 +104,7 @@ public:
 private:
 	Page* page_;
 	size_t page_size_;
+	size_t max_data_size_;
 
 	void* GetDataAddress(Block* block) {
 		return (char*)block + kBlockOffset;
@@ -125,7 +132,7 @@ private:
 		Block* block = page->first;
 		block->prev = nullptr;
 		block->next = nullptr;
-		block->size = buffer_size - kBlockOffset;
+		block->size = max_data_size_;
 		return page;
 	}
 
@@ -137,7 +144,7 @@ private:
 		Page* page = page_;
 		Block* block = nullptr;
 
-		while (page->next != nullptr)
+		for (;page->next != nullptr; page = page->next)
 		{
 			if (TryGetAvaliableBlock(page, size, &block)) {
 				return ReserveBlock(page, block, size);
@@ -149,8 +156,8 @@ private:
 		}
 
 		page->next = AllocPage();
-		TryGetAvaliableBlock(page, size, &block);
-		return ReserveBlock(page, block, size);
+		TryGetAvaliableBlock(page->next, size, &block);
+		return ReserveBlock(page->next, block, size);
 	}
 
 	bool TryGetAvaliableBlock(Page* page, size_t size, Block** result) {
@@ -220,7 +227,7 @@ private:
 
 	bool IsFree(Page* page) {
 		Block* block = (Block*)((char*)page + kHeaderOffset);
-		return block->size == buffer_size - kBlockOffset;
+		return block->size == max_data_size_;
 	}
 
 	void FreeBlock(Page* page, Block* block) {
@@ -248,7 +255,7 @@ private:
 		new_block->prev = block;
 		new_block->next = block->next;
 
-		if (block->next = nullptr) {
+		if (block->next == nullptr) {
 			page->last = new_block;
 		}
 		else {
@@ -266,7 +273,7 @@ private:
 			page->first = new_block;
 		}
 		else {
-			block->prev->next = block;
+			block->prev->next = new_block;
 		}
 
 		block->prev = new_block;
@@ -295,10 +302,10 @@ private:
 
 	void TryMergeWithNeighbours(Page* page, Block* block) {
 		if (block->prev != nullptr && IsLeftNeighbour(block, block->prev)) {
-			MergeWithNext(block->prev, block);
+			block = MergeWithNext(page, block->prev, block);
 		}
 		if (block->next != nullptr && IsRightNeighbour(block, block->next)) {
-			MergeWithNext(block, block->next);
+			block = MergeWithNext(page, block, block->next);
 		}
 	}
 
@@ -310,9 +317,20 @@ private:
 		return (char*)block + kBlockOffset + block->size == (char*)neighbour;
 	}
 
-	void MergeWithNext(Block* left, Block* right) {
-		left->next = right->next;
-		left->size += kBlockOffset + right->size;
+	Block* MergeWithNext(Page* page, Block* current, Block* next) {
+		current->next = next->next;
+
+		if (next->next != nullptr) {
+			next->next->prev = current;
+		}
+
+		current->size += kBlockOffset + next->size;
+		
+		if (page->last == next) {
+			page->last = current;
+		}
+
+		return current;
 	}
 };
 
