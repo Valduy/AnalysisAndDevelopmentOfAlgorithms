@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "../MemoryAllocatorsLibrary/FixedSizedAllocator.h"
 
+namespace fixed_tests {
+
 template<size_t block_size>
 void AllocAndFill(fixed::FixedSizedAllocator<block_size>* FSA, std::vector<int*>* allocated, size_t count);
 
@@ -35,7 +37,7 @@ TEST(FixedSizedAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
 	AllocAndFill(&FSA, &allocated, blocks_count);
 
 	EXPECT_TRUE(ArePointersSequential(allocated));
-	
+
 	Free(&FSA, &allocated);
 	FSA.Destroy();
 }
@@ -86,7 +88,7 @@ TEST(FixedSizedAllocator, Alloc_AllocAndFreeMemoryOfOnePage_AllPointersBelongToO
 	AllocAndFill(&FSA, &allocated, blocks_count);
 	FSA.Free(allocated[2]);
 	FSA.Free(allocated[1]);
-	allocated[2] = (int*) FSA.Alloc();
+	allocated[2] = (int*)FSA.Alloc();
 	FSA.Free(allocated[3]);
 	allocated[3] = (int*)FSA.Alloc();
 	allocated[1] = (int*)FSA.Alloc();
@@ -145,3 +147,6 @@ bool IsBelongToOnePage(std::vector<T*> allocated) {
 
 	return true;
 }
+
+} // namespace fixed_tests
+

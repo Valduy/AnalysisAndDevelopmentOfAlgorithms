@@ -1,6 +1,9 @@
 #include <vector>
 #include "pch.h"
 #include "../MemoryAllocatorsLibrary/CoalesceAllocator.h"
+#include "Util.h"
+
+namespace coalesce_tests {
 
 bool IsAllAllocated(const std::vector<void*>& allocated);
 
@@ -10,15 +13,9 @@ void AllocAndFill(coalesce::CoalesceAllocator<block_size>* CA, std::vector<void*
 template<size_t buffer_size>
 void Free(coalesce::CoalesceAllocator<buffer_size>* CA, std::vector<void*>* allocated);
 
-template<size_t size>
-class TestFatClass {
-private:
-	char buffer_[size];
-};
-
 TEST(CoalesceAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
 	const size_t count = 4;
-	const size_t buffer_size = sizeof(coalesce::Block) * count;	
+	const size_t buffer_size = sizeof(coalesce::Block) * count;
 	coalesce::CoalesceAllocator<buffer_size> CA;
 	std::vector<void*> allocated;
 	CA.Init();
@@ -33,7 +30,7 @@ TEST(CoalesceAllocator, Alloc_AllocLessThenPage_MemoryAllocated) {
 
 TEST(CoalesceAllocator, Alloc_AllocMoreThenPage_MemoryAllocated) {
 	const size_t count = 8;
-	const size_t buffer_size = sizeof(coalesce::Block) * count / 2;	
+	const size_t buffer_size = sizeof(coalesce::Block) * count / 2;
 	coalesce::CoalesceAllocator<buffer_size> CA;
 	std::vector<void*> allocated;
 	CA.Init();
@@ -120,3 +117,6 @@ void Free(coalesce::CoalesceAllocator<buffer_size>* CA, std::vector<void*>* allo
 
 	allocated->clear();
 }
+
+} // coalesce_tests
+

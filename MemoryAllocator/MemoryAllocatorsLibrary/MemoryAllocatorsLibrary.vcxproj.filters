@@ -19,6 +19,9 @@
     <Filter Include="Header Files\CoalesceAllocator">
       <UniqueIdentifier>{9945e4e9-e6a2-458d-9791-4d07eae918f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SizelessAllocator">
+      <UniqueIdentifier>{bc2bfe4c-03b3-4e9d-baec-71c89e89c9fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,17 +30,14 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Block.h">
-      <Filter>Header Files\FixedSizedAllocator</Filter>
-    </ClInclude>
     <ClInclude Include="FixedSizedAllocator.h">
-      <Filter>Header Files\FixedSizedAllocator</Filter>
-    </ClInclude>
-    <ClInclude Include="Page.h">
       <Filter>Header Files\FixedSizedAllocator</Filter>
     </ClInclude>
     <ClInclude Include="CoalesceAllocator.h">
       <Filter>Header Files\CoalesceAllocator</Filter>
+    </ClInclude>
+    <ClInclude Include="SizelessAllocator.h">
+      <Filter>Header Files\SizelessAllocator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

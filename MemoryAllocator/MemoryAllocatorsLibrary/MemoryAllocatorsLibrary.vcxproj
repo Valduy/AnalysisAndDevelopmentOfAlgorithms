@@ -151,12 +151,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Block.h" />
     <ClInclude Include="CoalesceAllocator.h" />
     <ClInclude Include="FixedSizedAllocator.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Page.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SizelessAllocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemoryAllocatorsLibrary.cpp" />

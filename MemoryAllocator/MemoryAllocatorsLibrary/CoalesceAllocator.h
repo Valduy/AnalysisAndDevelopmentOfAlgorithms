@@ -72,6 +72,11 @@ public:
 		}
 
 		Block* block = ReserveBlock(max(kMinDataSize, size));
+		
+		if (block == nullptr) {
+			return nullptr;
+		}
+		
 		return GetDataAddress(block);
 	}
 
@@ -156,6 +161,11 @@ private:
 		}
 
 		page->next = AllocPage();
+
+		if (page->next == nullptr) {
+			return nullptr;
+		}
+
 		TryGetAvaliableBlock(page->next, size, &block);
 		return ReserveBlock(page->next, block, size);
 	}
