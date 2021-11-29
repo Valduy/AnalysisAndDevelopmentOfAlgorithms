@@ -20,9 +20,7 @@ public:
 		, FSA512_((granularity_ * 8 - fixed::kHeaderOffset) / 512)
 	{}
 
-	virtual ~MemoryAllocator() {
-
-	}
+	virtual ~MemoryAllocator() = default;
 
 	virtual void Init() {
 		FSA16_.Init();
@@ -48,27 +46,26 @@ public:
 		if (size <= 16) {
 			return FSA16_.Alloc();
 		}
-		else if (size <= 32) {
+		if (size <= 32) {
 			return FSA32_.Alloc();
 		}
-		else if (size <= 64) {
+		if (size <= 64) {
 			return FSA64_.Alloc();
 		}
-		else if (size <= 128) {
+		if (size <= 128) {
 			return FSA128_.Alloc();
 		}
-		else if (size <= 256) {
+		if (size <= 256) {
 			return FSA256_.Alloc();
 		}
-		else if (size <= 512) {
+		if (size <= 512) {
 			return FSA512_.Alloc();
 		}
-		else if (size <= kMaxCoalesceSize) {
+		if (size <= kMaxCoalesceSize) {
 			return CA_.Alloc(size);
 		}
-		else {
-			return SA_.Alloc(size);
-		}
+
+		return SA_.Alloc(size);
 	}
 
 	virtual void Free(void* p) {
@@ -134,7 +131,7 @@ private:
 
 	sizeless::SizelessAllocator SA_;
 
-	size_t GetGranularity() {
+	static size_t GetGranularity() {
 		SYSTEM_INFO info;
 		GetSystemInfo(&info);
 		return info.dwPageSize;

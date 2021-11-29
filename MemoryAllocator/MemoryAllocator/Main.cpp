@@ -7,8 +7,8 @@ int main() {
 	fixed::FixedSizedAllocator<sizeof(double)> FSA(5);
 	FSA.Init();
 	double* memory = (double*)FSA.Alloc();
-	//FSA.DumbStat();
-	//FSA.DumbBlocks();
+	FSA.DumbStat();
+	FSA.DumbBlocks();
 	FSA.Free(memory);
 	FSA.Destroy();
 
