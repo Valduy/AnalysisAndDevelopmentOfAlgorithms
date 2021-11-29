@@ -2,6 +2,9 @@
 
 #include <Windows.h>
 #include <assert.h>
+#include <iostream>
+#include <vector>
+#include <numeric>
 
 namespace fixed {
 
@@ -95,15 +98,62 @@ public:
 		return GetBlockOwnerPage(block) != nullptr;
 	}
 
+//#ifdef DEBUG
 	virtual void DumbStat() const {
-		// TODO:
-	}
+		std::cout << "FixedSizedAllocator<" << block_size << "> statistics:\n";
+		size_t page_index = 0;
+		size_t total_free = 0;
+		size_t total_busy = 0;
 
-	virtual void DumbBlocks() const {
-		// TODO:
+		for (Page* page = page_; page != nullptr; page = page->next) {
+			size_t free = CountFreeBlocks(page) + blocks_per_page_ - page->initialized_count;
+			size_t busy = blocks_per_page_ - free;
+
+			std::cout << "Page " << page_index << " statistics:\n";
+			std::cout << "\tFree blocks: " << free << "\n";
+			std::cout << "\tBusy blocks: " << busy << "\n";
+
+			page_index += 1;
+			total_free += free;
+			total_busy += busy;
+		}
+
+		std::cout << "Total statistics:\n";
+		std::cout << "\tPages count: " << page_index << "\n";
+		std::cout << "\tFree blocks: " << total_free << "\n";
+		std::cout << "\nBusy blocks: " << total_busy << "\n";
 	}
+//#endif
+
+//#ifdef DEBUG
+	virtual void DumbBlocks() const {
+		std::cout << "FixedSizedAllocator<" << block_size << "> blocks:\n";
+		size_t page_index = 0;
+
+		for (Page* page = page_; page != nullptr; page = page->next) {
+			std::vector<size_t> busy(page->initialized_count);
+			std::iota(busy.begin(), busy.end(), 0);			
+			Block* block;
+
+			for (int i = page->head; i != -1; i = block->next) {
+				block = GetPageBlock(page, i);
+				busy.erase(std::next(busy.begin(), i));
+			}
+
+			for (size_t i : busy) {
+				block = GetPageBlock(page, i);
+				std::cout << "Page " << page_index << "Block " << i << ":\n";
+				std::cout << "\tAddress: " << block << "Size: " << block_size << "\n";
+			}
+
+			page_index += 1;
+		}
+	}
+//#endif
 
 private:
+	std::vector<Block*> allocated_;
+
 	Page* page_;
 	size_t page_size_;
 	size_t blocks_per_page_;
@@ -153,7 +203,7 @@ private:
 		return page->initialized_count < blocks_per_page_ || page->head != -1;
 	}
 
-	void* GetPageDataAddress(Page* page) {
+	void* GetPageDataAddress(const Page* page) const {
 		return (char*)page + kHeaderOffset;
 	}
 
@@ -172,7 +222,7 @@ private:
 		return nullptr;
 	}
 
-	Block* GetPageBlock(Page* page, int block_number) {
+	Block* GetPageBlock(const Page* page, int block_number) const {
 		assert(block_number >= 0
 			&& block_number < blocks_per_page_
 			&& "Block number is out of page range.");
@@ -201,15 +251,19 @@ private:
 			return true;
 		}
 
+		return CountFreeBlocks(page) == page->initialized_count;
+	}
+
+	size_t CountFreeBlocks(const Page* page) const {
 		Block* block = GetPageBlock(page, page->head);
-		int blocks_count = 1;
+		size_t free_blocks_count = 1;
 
 		while (block->next != -1) {
 			block = GetPageBlock(page, block->next);
-			blocks_count++;
+			free_blocks_count++;
 		}
 
-		return blocks_count == page->initialized_count;
+		return free_blocks_count;
 	}
 
 	void FreeBlock(Page* page, Block* block) {
