@@ -129,13 +129,14 @@ public:
 
 	virtual void DumbBlocks() const {
 		std::cout << "FixedSizedAllocator<" << block_size << "> blocks:\n";
+
 		bool* busy = new bool[blocks_per_page_];
 		size_t page_index = 0;
 
 		for (Page* page = page_; page != nullptr; page = page->next) {
-			std::cout << "\n\tPage " << page_index << " statistics:\n";
+			std::cout << "\n\tPage " << page_index << " blocks:\n";
+
 			std::fill_n(busy, blocks_per_page_, true);
-		
 			Block* block;
 
 			for (int i = page->head; i != -1; i = block->next) {
@@ -154,6 +155,7 @@ public:
 		}
 
 		delete[] busy;
+
 		std::cout << "\n";
 	}
 
@@ -184,6 +186,10 @@ private:
 		VirtualFree(page, 0, MEM_RELEASE);
 	}
 
+	static void* GetPageDataAddress(const Page* page) {
+		return (char*)page + kHeaderOffset;
+	}
+
 	Page* GetAvailablePage() const {
 		Page* page = page_;
 
@@ -205,10 +211,6 @@ private:
 
 	bool IsAvailable(const Page* page) const {
 		return page->initialized_count < blocks_per_page_ || page->head != -1;
-	}
-
-	void* GetPageDataAddress(const Page* page) const {
-		return (char*)page + kHeaderOffset;
 	}
 
 	Block* ReserveAvailableBlock(Page* page) const {
@@ -268,7 +270,7 @@ private:
 
 		while (block->next != -1) {
 			block = GetPageBlock(page, block->next);
-			free_blocks_count++;
+			free_blocks_count += 1;
 		}
 
 		return free_blocks_count;
