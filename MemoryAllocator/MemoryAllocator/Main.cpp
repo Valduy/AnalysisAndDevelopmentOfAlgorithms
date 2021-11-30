@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../MemoryAllocatorsLibrary/FixedSizedAllocator.h"
 #include "../MemoryAllocatorsLibrary/CoalesceAllocator.h"
+#include "../MemoryAllocatorsLibrary/SizelessAllocator.h"
 
 int main() {
 	fixed::FixedSizedAllocator<sizeof(double)> FSA(5);
@@ -19,6 +20,12 @@ int main() {
 	CA.DumpBlocks();
 	CA.Free(memory);
 	CA.Destroy();
+
+	sizeless::SizelessAllocator SA;
+	memory = (double*)SA.Alloc(sizeof(double*));
+	SA.DumbStat();
+	SA.DumbBlocks();	
+	SA.Free(memory);
 
 	return 0;
 }

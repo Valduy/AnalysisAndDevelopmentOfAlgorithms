@@ -89,7 +89,9 @@ public:
 
 		assert(page != nullptr && "Not correct pointer.");
 
-		allocated_[page].erase(block); // TODO
+#ifndef DEBUG
+		allocated_[page].erase(block);
+#endif
 
 		if (page != nullptr) {
 			FreeBlock(page, block);
@@ -101,6 +103,7 @@ public:
 		return GetBlockOwnerPage(block) != nullptr;
 	}
 
+#ifndef DEBUG
 	virtual void DumpStat() const {
 		std::cout << "CoalesceAllocator<" << buffer_size << "> statistics:\n";
 		std::cout << "\tPage size:" << kPageSize << "\n";
@@ -129,7 +132,9 @@ public:
 		std::cout << "\t\tBusy blocks: " << total_busy << "\n";
 		std::cout << "\n";
 	}
+#endif
 
+#ifndef DEBUG
 	virtual void DumpBlocks() const {
 		std::cout << "CoalesceAllocator<" << buffer_size << "> blocks:\n";
 
@@ -154,9 +159,12 @@ public:
 
 		std::cout << "\n";
 	}
+#endif
 
 private:
+#ifndef DEBUG
 	std::map<Page*, std::set<Block*>> allocated_;
+#endif
 
 	const size_t kPageSize = kHeaderOffset + buffer_size;
 	const size_t kMaxDataSize = buffer_size - kBlockOffset;
@@ -307,14 +315,18 @@ private:
 		if (block->size - size <= kMinDataSize) {
 			RemoveBlock(page, block);
 
-			allocated_[page].insert(block); // TODO
+#ifndef DEBUG
+			allocated_[page].insert(block);
+#endif
 
 			return block;
 		}
 
 		Block* piece = CutPieceOfBlock(block, size);
 
-		allocated_[page].insert(piece); // TODO
+#ifndef DEBUG
+		allocated_[page].insert(piece);
+#endif
 
 		return piece;
 	}

@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <assert.h>
+#include <map>
 
 namespace sizeless {
 
@@ -9,7 +10,7 @@ struct Page {
 	Page* next;
 };
 
-const size_t kHeaderOffset = sizeof(Page);
+constexpr size_t kHeaderOffset = sizeof(Page);
 
 class SizelessAllocator {
 public:
@@ -28,12 +29,23 @@ public:
 			return nullptr;
 		}
 
+#ifndef DEBUG
+		allocated_[page] = size;
+#endif
+
+		page->next = page_;
+		page_ = page;
 		return GetDataAddress(page);
 	}
 
 	virtual void Free(void* p) {
 		Page* page = GetPageAddress(p);
 		assert(TryRemovePage(page) && "Not correct pointer.");
+
+#ifndef DEBUG
+		allocated_.erase(page);
+#endif
+
 		FreePage(page);
 	}
 
@@ -49,43 +61,62 @@ public:
 		return false;
 	}
 
+#ifndef DEBUG
 	virtual void DumbStat() const {
+		std::cout << "SizelessAllocator statistics:\n";
 
+		size_t count = 0;
+
+		for (Page* page = page_; page != nullptr; page = page->next) {
+			count += 1;
+		}
+
+		std::cout << "\tPages count:" << count << "\n";
+		std::cout << "\n";
 	}
+#endif
 
+#ifndef DEBUG
 	virtual void DumbBlocks() const {
+		std::cout << "SizelessAllocator pages:\n";
 
+		size_t page_index = 0;
+
+		for (Page* page = page_; page != nullptr; page = page->next) {
+			const auto it = allocated_.find(page);
+
+			std::cout << "\n\tPage " << page_index << " info:\n";
+			std::cout << "\t\tAddress: " << page << " size:" << it->second << "\n";
+		}
+
+		std::cout << "\n";
 	}
+#endif
 
 private:
+#ifndef DEBUG
+	std::map < Page*, size_t> allocated_;
+#endif
+
 	Page* page_;
 
-	Page* AllocPage(size_t size) {
-		Page* page = (Page*)VirtualAlloc(
+	static Page* AllocPage(size_t size) {
+		return (Page*)VirtualAlloc(
 			NULL,
 			kHeaderOffset + size,
 			MEM_COMMIT | MEM_RESERVE,
 			PAGE_READWRITE);
-
-		// If allocation failed.
-		if (page == nullptr) {
-			return nullptr;
-		}
-
-		page->next = page_;
-		page_ = page;
-		return page;
 	}
 
-	void FreePage(Page* page) {
+	static void FreePage(Page* page) {
 		VirtualFree(page, 0, MEM_RELEASE);
 	}
 
-	void* GetDataAddress(Page* page) {
+	static void* GetDataAddress(const Page* page) {
 		return (char*)page + kHeaderOffset;
 	}
 
-	Page* GetPageAddress(void* p) {
+	static Page* GetPageAddress(const void* p) {
 		return (Page*)((char*)p - kHeaderOffset);
 	}
 

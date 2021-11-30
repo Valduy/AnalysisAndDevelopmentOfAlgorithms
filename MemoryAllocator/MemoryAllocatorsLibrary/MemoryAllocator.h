@@ -95,6 +95,7 @@ public:
 		}
 	}
 
+#ifndef DEBUG
 	virtual void DumpStat() const {
 		FSA16_.DumbStat();
 		FSA32_.DumbStat();
@@ -105,7 +106,9 @@ public:
 		CA_.DumpStat();
 		SA_.DumbStat();
 	}
+#endif
 
+#ifndef DEBUG
 	virtual void DumpBlocks() const {
 		FSA16_.DumbBlocks();
 		FSA32_.DumbBlocks();
@@ -116,6 +119,7 @@ public:
 		CA_.DumpBlocks();
 		SA_.DumbBlocks();
 	}
+#endif
 
 private:
 	size_t granularity_;

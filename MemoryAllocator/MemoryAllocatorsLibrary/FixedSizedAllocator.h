@@ -93,6 +93,7 @@ public:
 		return GetBlockOwnerPage(block) != nullptr;
 	}
 
+#ifndef DEBUG
 	virtual void DumbStat() const {
 		std::cout << "FixedSizedAllocator<" << block_size << "> statistics:\n";
 		std::cout << "\tPage size: " << page_size_ << "\n";
@@ -126,7 +127,9 @@ public:
 		std::cout << "\t\tBusy blocks: " << total_busy << "\n";
 		std::cout << "\n";
 	}
+#endif
 
+#ifndef DEBUG
 	virtual void DumbBlocks() const {
 		std::cout << "FixedSizedAllocator<" << block_size << "> blocks:\n";
 
@@ -158,6 +161,7 @@ public:
 
 		std::cout << "\n";
 	}
+#endif
 
 private:
 	Page* page_;
