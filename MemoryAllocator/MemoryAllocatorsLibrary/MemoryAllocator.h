@@ -90,34 +90,42 @@ public:
 		else if (CA_.IsBelongTo(p)) {
 			CA_.Free(p);
 		}
-		else if (SA_.IsBelongTo(p)) {
+		else {
 			SA_.Free(p);
 		}
 	}
 
 #ifndef DEBUG
 	virtual void DumpStat() const {
-		FSA16_.DumbStat();
-		FSA32_.DumbStat();
-		FSA64_.DumbStat();
-		FSA128_.DumbStat();
-		FSA256_.DumbStat();
-		FSA512_.DumbStat();
+		std::cout << "MemoryAllocator statistics:\n";
+
+		FSA16_.DumpStat();
+		FSA32_.DumpStat();
+		FSA64_.DumpStat();
+		FSA128_.DumpStat();
+		FSA256_.DumpStat();
+		FSA512_.DumpStat();
 		CA_.DumpStat();
-		SA_.DumbStat();
+		SA_.DumpStat();
+
+		std::cout << "\n";
 	}
 #endif
 
 #ifndef DEBUG
 	virtual void DumpBlocks() const {
-		FSA16_.DumbBlocks();
-		FSA32_.DumbBlocks();
-		FSA64_.DumbBlocks();
-		FSA128_.DumbBlocks();
-		FSA256_.DumbBlocks();
-		FSA512_.DumbBlocks();
+		std::cout << "MemoryAllocator blocks:\n";
+
+		FSA16_.DumpBlocks();
+		FSA32_.DumpBlocks();
+		FSA64_.DumpBlocks();
+		FSA128_.DumpBlocks();
+		FSA256_.DumpBlocks();
+		FSA512_.DumpBlocks();
 		CA_.DumpBlocks();
-		SA_.DumbBlocks();
+		SA_.DumpBlocks();
+
+		std::cout << "\n";
 	}
 #endif
 

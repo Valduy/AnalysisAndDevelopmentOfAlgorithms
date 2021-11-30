@@ -62,7 +62,7 @@ public:
 	}
 
 #ifndef DEBUG
-	virtual void DumbStat() const {
+	virtual void DumpStat() const {
 		std::cout << "SizelessAllocator statistics:\n";
 
 		size_t count = 0;
@@ -77,16 +77,15 @@ public:
 #endif
 
 #ifndef DEBUG
-	virtual void DumbBlocks() const {
+	virtual void DumpBlocks() const {
 		std::cout << "SizelessAllocator pages:\n";
 
 		size_t page_index = 0;
 
 		for (Page* page = page_; page != nullptr; page = page->next) {
 			const auto it = allocated_.find(page);
-
-			std::cout << "\n\tPage " << page_index << " info:\n";
-			std::cout << "\t\tAddress: " << page << " size:" << it->second << "\n";
+			std::cout << "\tPage " << page_index << " address: " << page << " size : " << it->second << "\n";
+			page_index += 1;
 		}
 
 		std::cout << "\n";

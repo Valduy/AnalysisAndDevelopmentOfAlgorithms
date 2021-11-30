@@ -94,7 +94,7 @@ public:
 	}
 
 #ifndef DEBUG
-	virtual void DumbStat() const {
+	virtual void DumpStat() const {
 		std::cout << "FixedSizedAllocator<" << block_size << "> statistics:\n";
 		std::cout << "\tPage size: " << page_size_ << "\n";
 		std::cout << "\tBlock size: " << block_size << "\n";
@@ -107,7 +107,7 @@ public:
 		for (Page* page = page_; page != nullptr; page = page->next) {
 			const size_t uninitialized = blocks_per_page_ - page->initialized_count;
 			const size_t free = CountFreeBlocks(page);			
-			const size_t busy = blocks_per_page_ - free;
+			const size_t busy = page->initialized_count - free;
 
 			std::cout << "\n\tPage " << page_index << " statistics:\n";
 			std::cout << "\t\tUninitialized blocks:" << uninitialized << "\n";
@@ -130,7 +130,7 @@ public:
 #endif
 
 #ifndef DEBUG
-	virtual void DumbBlocks() const {
+	virtual void DumpBlocks() const {
 		std::cout << "FixedSizedAllocator<" << block_size << "> blocks:\n";
 
 		bool* busy = new bool[blocks_per_page_];
