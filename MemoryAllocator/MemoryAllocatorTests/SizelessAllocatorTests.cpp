@@ -1,4 +1,5 @@
 #include <vector>
+#include <set>
 #include "pch.h"
 #include "../MemoryAllocatorsLibrary/SizelessAllocator.h"
 #include "Util.h"
@@ -34,7 +35,8 @@ TEST(SizelessAllocator, Alloc_AllocSomePages_MemoryAllocated) {
 
 bool IsAllAllocated(const std::vector<void*>& allocated) {
 	return std::all_of(allocated.begin(), allocated.end(),
-		[&](const void* p) {return p != nullptr; });
+		[&](const void* p) {return p != nullptr; })
+		&& std::set<void*>(allocated.begin(), allocated.end()).size() == allocated.size(); // Unique check.
 }
 
 void Free(sizeless::SizelessAllocator* SA, std::vector<void*>* allocated) {

@@ -22,14 +22,14 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Util">
       <UniqueIdentifier>{0c2d007b-f2de-4238-8d31-57e946d5539f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Tests">
       <UniqueIdentifier>{58f2ee0d-f7a1-43c4-88f1-3e137e38571a}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

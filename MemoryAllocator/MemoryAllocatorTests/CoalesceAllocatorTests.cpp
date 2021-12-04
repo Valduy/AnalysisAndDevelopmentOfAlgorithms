@@ -1,4 +1,5 @@
 #include <vector>
+#include <set>
 #include "pch.h"
 #include "../MemoryAllocatorsLibrary/CoalesceAllocator.h"
 #include "Util.h"
@@ -97,7 +98,8 @@ TEST(CoalesceAllocator, Alloc_AllocDifferentSizes_MemoryAllocated) {
 
 bool IsAllAllocated(const std::vector<void*>& allocated) {
 	return std::all_of(allocated.begin(), allocated.end(),
-		[&](const void* p) {return p != nullptr; });
+		[&](const void* p) {return p != nullptr; })
+		&& std::set<void*>(allocated.begin(), allocated.end()).size() == allocated.size(); // Unique check.
 }
 
 template<size_t block_size>
